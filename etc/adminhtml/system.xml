@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="gomage" sortOrder="200" translate="label">
+            <label>GoMage</label>
+        </tab>
+        <section id="gomage_client" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="1000" translate="label">
+            <label>Activation</label>
+            <tab>gomage</tab>
+            <resource>GoMage_Client::config_gomage_client</resource>
+            <group id="api" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="10" translate="label">
+                <label>GoMage Client M2 v.1.0.0</label>
+                <field id="button" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="10" translate="label" type="button">
+                    <label>Activation Status</label>
+                    <frontend_model>GoMage\Core\Block\Adminhtml\System\Config\Form\Button</frontend_model>
+                    <comment/>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
