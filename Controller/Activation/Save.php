@@ -10,29 +10,25 @@ namespace GoMage\Core\Controller\Activation;
 
 use Magento\Framework\App\Action\Context;
 use \Magento\Framework\App\Config\ConfigResource\ConfigInterface ;
+use GoMage\Core\Helpers\Data;
 
 class Save extends \Magento\Framework\App\Action\Action
 {
-    protected $scopeConfig;
-    public function __construct(Context $context, ConfigInterface $scopeConfig)
+    private $helperData;
+
+    public function __construct(Context $context, Data $helperData)
     {
-        $this->scopeConfig = $scopeConfig;
+        $this->helperData = $helperData;
         parent::__construct($context);
     }
 
     public function execute()
     {
-        $customerData = $this->getRequest()->getParams('data_customer');
-        if($customerData) {
-            $arrayAccess = json_decode($customerData['data_customer'], true);
-            if(isset($arrayAccess['access_token'])) {
-                $this->scopeConfig ->saveConfig(
-                    'section/gomage_client/access', $arrayAccess['access_token'],
-                    'default',
-                    0
-                );
-            }
-        }
-        die;
+        $dataCustomer = $this->getRequest()->getParams('data_customer');
+        if(isset($dataCustomer['data_customer'])
+            && isset($dataCustomer['data_customer']['content'])
+            && isset($dataCustomer['data_customer']['class'])
+        )
+        $this->helperData->proccess($dataCustomer['data_customer']['content'], $dataCustomer['data_customer']['class']);
     }
 }
