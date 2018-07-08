@@ -38,6 +38,14 @@ class ConfigEdit
      * @return mixed
      */
     public function afterExecute(CoreConfigEdit $configEdit, $result) {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        /** @var \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config */
+        $config = $objectManager
+            ->get('Magento\Framework\App\Config\ScopeConfigInterface');
+        $param = $config->getValue('section/gomage_client/param');
+        $this->curl->addHeader("Authorization", "Bearer {$param}");
+        $this->curl->get('http://serveractivatem2.loc/api/rest/activates');
+        var_dump($this->curl->getBody());
         return $result;
     }
 }
