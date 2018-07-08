@@ -45,7 +45,6 @@ class ConfigEdit
         $param = $config->getValue('section/gomage_client/param');
         $this->curl->addHeader("Authorization", "Bearer {$param}");
         $this->curl->get('http://serveractivatem2.loc/api/rest/activates');
-        var_dump($this->curl->getBody());
         return $result;
     }
 }
