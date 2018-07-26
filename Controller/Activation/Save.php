@@ -10,7 +10,7 @@ namespace GoMage\Core\Controller\Activation;
 
 use Magento\Framework\App\Action\Context;
 use \Magento\Framework\App\Config\ConfigResource\ConfigInterface ;
-use GoMage\Core\Helpers\Data;
+use GoMage\Core\Helper\Data;
 
 class Save extends \Magento\Framework\App\Action\Action
 {

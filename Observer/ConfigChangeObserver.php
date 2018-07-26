@@ -1,16 +1,19 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Димасик
+ * Date: 22.07.2018
+ * Time: 20:38
+ */
 
-namespace GoMage\Core\Plugin;
+namespace GoMage\Core\Observer;
 
-use Magento\Config\Controller\Adminhtml\System\Config\Edit as CoreConfigEdit;
+use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\App\RequestInterface;
 use GoMage\Core\Helper\Data;
 
-/**
- * Class ConfigEdit
- */
-class ConfigEdit
+class ConfigChangeObserver implements ObserverInterface
 {
     private $configEdit;
     /**
@@ -35,14 +38,8 @@ class ConfigEdit
         $this->request = $request;
     }
 
-    /**
-     * @param CoreConfigEdit $configEdit
-     * @param $result
-     * @return mixed
-     */
-    public function afterExecute(CoreConfigEdit $configEdit, $result) {
-      // $this->helperData->proccess2($this->curl);
-        return $result;
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        $this->helperData->proccess2($this->curl);
     }
-
 }
