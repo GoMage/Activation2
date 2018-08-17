@@ -5,7 +5,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected $helperData;
     protected $b = ['groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'];
-    const SERVER_URL = 'http://mage19381.loc/activate/activation/';
+    const SERVER_URL = '/activate/activation/';
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         if ($this->_cache->load('product_' . $this->_scopeConfig->getValue('gomage_client/api/product_id'))) {
@@ -42,7 +42,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
             }
         }
         $i = trim($i,',');
-        $url = self::SERVER_URL.'?callback='.$this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
+        $url = $this->_scopeConfig->getValue('gomage_core_url/url_core').self::SERVER_URL.'?callback='.$this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
         $url .= '&d='. $base;
         $url .= (strlen($i> 0))? '&p='.$i :'';
         $url .= '&k='. $this->_scopeConfig->getValue('gomage/key/act');

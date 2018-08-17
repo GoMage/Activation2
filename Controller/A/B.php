@@ -35,12 +35,16 @@ class B extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-        $dataCustomer = $this->getRequest()->getParams('data_customer');
-        $a = $this->helperData->proccess3($this->curl, $dataCustomer);
-        if($a) {
-            return $a->process3($dataCustomer);
-        } else {
-            $result = $this->resultJsonFactory->create();
+        try {
+            $dataCustomer = $this->getRequest()->getParams('data_customer');
+            $a = $this->helperData->proccess3($this->curl, $dataCustomer);
+            if ($a) {
+                return $a->process3($dataCustomer, $this->curl);
+            } else {
+                $result = $this->resultJsonFactory->create();
+                return $result->setData(['error' => 1]);
+            }
+        } catch (\Exception $e) {
             return $result->setData(['error' => 1]);
         }
 
