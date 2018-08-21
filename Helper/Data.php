@@ -34,9 +34,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_jsHelper;
 
+    protected $fullModuleList;
+
     protected $b = ['groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'];
 
-    public function __construct(\Magento\Framework\ObjectManagerInterface $objectManager)
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Module\FullModuleList $fullModuleList
+    )
     {
         $this->_objectManager = $objectManager;
         $this->_attributeCollectionFactory = $objectManager->get('Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory');
@@ -49,6 +54,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_encryptor = $objectManager->get('Magento\Framework\Encryption\Encryptor');
         $this->_scopeConfig = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface');
         $this->_jsHelper = $objectManager->get('Magento\Framework\View\Helper\Js');
+        $this->fullModuleList = $fullModuleList;
     }
    protected $poccessorValue;
 
@@ -64,35 +70,27 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
    }
 
     /** * @return array */
-    public function getAvailableWebsites()
+    public function getAvailableWebsites($param)
     {
         $w = [];
-        $param = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
         if(!$param) {
             $param = [];
         }
         foreach ($param as $key => $item) {
-            if (!isset($item['i'])) {
-                continue;
-            }
-            $w[$item['i']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups'].'/'.$item['i']);
+            $w[$item] = $this->_scopeConfig->getValue($this->b['section'].'/section'.'/'.$item);
         }
         return $w;
     }
 
     /** * @return array */
-    public function getAvailableStores()
+    public function getAvailableStores($param)
     {
         $s = [];
-        $param = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
         if(!$param) {
             $param = [];
         }
         foreach ($param as $key => $item) {
-            if (!isset($item['i'])) {
-                continue;
-            }
-            $s[$item['i']] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['group_s'].'/'.'a'.$item['i']);
+            $s[$item] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['group_s'].'/'.$item);
         }
         return $s;
     }
@@ -110,151 +108,166 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
     }
+
+    public function getN() {
+        $n = [];
+        $names = $this->fullModuleList->getNames();
+        foreach ($names as $name) {
+            $nn = strpos($name, 'GoMage');
+            if(($nn || 0 === $nn) && $name != 'GoMage_Core') {
+                $n[] = $name;
+            }
+        }
+        return $n;
+    }
     public function getC(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $html = '';
-        $param = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
+        $param = $this->getN();
         $id   = $element->getId();
-
-        $websites = $this->getAvailableWebsites();
-        $stores = $this->getAvailableStores();
+        $param = $this->getN();
+        $websites = $this->getAvailableWebsites($param);
+        $stores = $this->getAvailableStores($param);
         $secure = $this->_scopeConfig->getValue('web/secure/use_in_frontend');
-        if(!$param) {
-            $param = [];
-        }
-        /** @var \Magento\Store\Model\Website $website */
-        foreach ($param as $key => $item) {
-            if(!isset($item['i']) || !isset($item['code'])) {
-                continue;
-            }
-            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].']';
-            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].']';
-            $html.='<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.$item['name'].'</div>';
-            $t = $this->_scopeConfig->getValue('section/'.'a'.$item['i'].'/e');
-            switch ( $t ) {
-                case  '0':
-                    $html.='<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Module is Activated').'</div>';
-                    break;
-                case  1:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('The number of domains purchased is less than the number of selected').'</div>';
-                    break;
-                case  2:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Inccorect  license data. Your licence is blocked').'</div>';
-                    break;
-                case  3:
-                    break;
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Inccorect  license key. Your licence is blocked').'</div>';
-                case  4:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Incorrect license data .').'</div>';
-                    break;
-                case  5:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('This version is not included in your update period .Your licence is blocked').'</div>';
-                    break;
-                case  6:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Your demolicense is expired .Your licence is blocked ').'</div>';
 
-                    break;
-                case  7:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('The number of domains purchased is less than the number of selected. Your licence is blocked').'</div>';
-                    break;
+        if($param) {
+            /** @var \Magento\Store\Model\Website $website */
+            foreach ($param as $key => $item) {
+                if (!$this->_scopeConfig->getValue('section/'.$item.'/a')) {
+                    $t = $this->_scopeConfig->getValue('section/' . $item. '/e');
+                    switch ($t) {
+                        case  1:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        case  2:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license data. Your licence is blocked') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        case  3:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        case  4:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Incorrect license data .') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        case  5:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('This version is not included in your update period .Your licence is blocked') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        case  6:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Your demolicense is expired .Your licence is blocked') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
 
-                case  8:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Exceeds the number of available domains for the license demo').'</div>';
-                    break;
-                default:
-                    $html.='<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'.__('Module is not Activated').'</div>';
-            }
-            $websiteHtml  = '';
-            if($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
-                $base =  $this->_scopeConfig->getValue('web/secure/base_url');
-            } else {
-                $base =  $this->_scopeConfig->getValue('web/unsecure/base_url');
-            }
-            foreach ($this->_storeManager->getWebsites() as $website) {
-                $website->getConfig('web/unsecure/base_url');
-                $element->setName($name . '[]');
-                $element->setId($id . '_' . $website->getId());
-                $element->setChecked(in_array($website->getId(), $websites[$item['i']] ? explode(',', $websites[$item['i']]) : []));
-                $element->setValue($website->getId());
-                $elementHtml = $element->getElementHtml();
-                if($secure) {
-                    $conditionW = $base != $website->getConfig('web/secure/base_url');
+                            break;
+                        case  7:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected. Your licence is blocked') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+
+                        case  8:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Exceeds the number of available domains for the license demo') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            break;
+                        default:
+                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is not Activated') . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                    }
+                    continue;
+                }
+
+                $html .= '<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is Activated') . '</div>';
+                $name = 'groups[gomage_core][' . $this->b['fields'] . ']['  . $item . '][' . $this->b['value'] . ']';
+                $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .$item . '][' . $this->b['value'] . ']';
+                $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                $websiteHtml = '';
+                if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
+                    $base = $this->_scopeConfig->getValue('web/secure/base_url');
                 } else {
-                    $conditionW = $base != $website->getConfig('web/unsecure/base_url');
-                };
-                $elementHtml = $conditionW ? $elementHtml : '';
-                $storeHtml = '';
-                foreach ($website->getStores() as $store) {
-                    if(!$store->isActive())
-                    {
-                        continue;
-                    }
-                    if($secure) {
-                        $condition = $base != $store->getConfig('web/secure/base_url');
+                    $base = $this->_scopeConfig->getValue('web/unsecure/base_url');
+                }
+                foreach ($this->_storeManager->getWebsites() as $website) {
+                    $website->getConfig('web/unsecure/base_url');
+                    $element->setName($name . '[]');
+                    $element->setId($id . '_' . $website->getId());
+                    $element->setChecked(in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : []));
+                    $element->setValue($website->getId());
+                    $elementHtml = $element->getElementHtml();
+                    if ($secure) {
+                        $conditionW = $base != $website->getConfig('web/secure/base_url');
                     } else {
-                        $condition = $base!= $store->getConfig('web/unsecure/base_url');
+                        $conditionW = $base != $website->getConfig('web/unsecure/base_url');
                     };
-                    if($condition) {
+                    $elementHtml = $conditionW ? $elementHtml : '';
+                    $storeHtml = '';
+                    foreach ($website->getStores() as $store) {
+                        if (!$store->isActive()) {
+                            continue;
+                        }
+                        if ($secure) {
+                            $condition = $base != $store->getConfig('web/secure/base_url');
+                        } else {
+                            $condition = $base != $store->getConfig('web/unsecure/base_url');
+                        };
+                        if ($condition) {
 
-                        $element->setName($namePrefix . '[]');
-                        $element->setId($id . '_store_' . $store->getId());
-                        $element->setChecked(in_array($store->getId(), isset($stores[$item['i']]) ? explode(',', $stores[$item['i']]) : []));
-                        $element->setValue($store->getId());
-                        $storeHtml .= '<div class="field choice admin__field admin__field-option" style="margin-left: 10%">' . $element->getElementHtml() .
+                            $element->setName($namePrefix . '[]');
+                            $element->setId($id . '_store_' . $store->getId());
+                            $element->setChecked(in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : []));
+                            $element->setValue($store->getId());
+                            $storeHtml .= '<div class="field choice admin__field admin__field-option" style="margin-left: 10%">' . $element->getElementHtml() .
+                                ' <label for="' .
+                                $id . '_' . $store->getId() .
+                                '" class="admin__field-label"><span>' .
+                                $this->_storeManager->getStore($store->getId())->getName() .
+                                '</span></label>';
+                            $storeHtml .= '</div>' . "\n";
+                        }
+                    }
+                    if ($conditionW || strlen($storeHtml) > 0) {
+                        $websiteHtml .= '<div class="field website-checkbox-' . $item . ' choice admin__field admin__field-option">' . $elementHtml .
                             ' <label for="' .
-                            $id . '_' . $store->getId() .
+                            $id . '_' . $website->getId() .
                             '" class="admin__field-label"><span>' .
-                            $this->_storeManager->getStore($store->getId())->getName() .
+                            $website->getName() .
                             '</span></label>';
-                        $storeHtml .= '</div>' . "\n";
+                    }
+                    if (strlen($storeHtml) > 0) {
+                        $websiteHtml .= $storeHtml;
+                    }
+
+
+                    if ($conditionW || strlen($storeHtml) > 0) {
+                        $websiteHtml .= '</div>' . "\n";
                     }
                 }
-
-                if($conditionW || strlen($storeHtml) > 0) {
-                    $websiteHtml .= '<div class="field website-checkbox-'.$item['code'].' choice admin__field admin__field-option">' . $elementHtml .
-                        ' <label for="' .
-                        $id . '_' . $website->getId() .
-                        '" class="admin__field-label"><span>' .
-                        $website->getName() .
-                        '</span></label>';
-                }
-                if(strlen($storeHtml) > 0) {
-                    $websiteHtml .= $storeHtml;
-                }
-
-
-                if($conditionW || strlen($storeHtml) > 0) {
-                    $websiteHtml  .= '</div>' . "\n";
-                }
+                $html .= $websiteHtml;
             }
-            $html .= $websiteHtml;
-        }
-        if(!$param) {
-            $param = [];
-        } else {
-            $nameStore = $element->getName();
-            $element->setName($nameStore . '[]');
-            $jsString='';
-        }
-        foreach ($param as $key => $item) {
-            if(!isset($item['i']) || !isset($item['code'])) {
-                continue;
+            if (!$param) {
+                $param = [];
+            } else {
+                $nameStore = $element->getName();
+                $element->setName($nameStore . '[]');
+                $jsString = '';
             }
-            $c = (int)$this->_scopeConfig->getValue('section/'.'a'.$item['i'] . '/c') ? ((int)$this->_scopeConfig->getValue('section/'.'a'.$item['i'] . '/c') )   : 100000;
-            $name = 'groups['.$this->b['groups'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].'][]';
-            $namePrefix = 'groups['.$this->b['group_s'].']['.$this->b['fields'].']['.'a'.$item['i'].']['.$this->b['value'].'][]';
-            $jsString .= '
-            $$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\'], .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']").each(function(element) {
+            foreach ($param as $key => $item) {
+                //var_dump('.website-checkbox-' . $item . ' input[name="' . $name . "']");
+                $c = (int)$this->_scopeConfig->getValue('section/' .  $item . '/c') ? ((int)$this->_scopeConfig->getValue('section/' . $item. '/c')) : 0;
+                $name = 'groups[' . $this->b['section'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
+                $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
+                $jsString .= '
+            $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(element) {
                element.observe("click", function () {
-                    if($$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']:checked").length >= ' .$c
-                . '){
-                        $$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\'], .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\']").each(function(e){
+                    if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= ' . $c
+                    . '){
+                        $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
                                 e.disabled = "disabled";
                             }
                         });
     			    }else {
-                        $$(".website-checkbox-'.$item['code'].' input[name=\'' . $namePrefix . '\'], .website-checkbox-'.$item['code'].' input[name=\'' . $name . '\'] ").each(function(e){
+                        $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\'] ").each(function(e){
                             if(!e.checked){
                                 e.disabled = "";
                             }
@@ -262,9 +275,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     			    }
                });
             });';
-        }
-        if(!$param) {
-            return '';
+            }
         }
         return $html . $this->_jsHelper->getScript(
                 'require([\'prototype\'], function(){document.observe("dom:loaded", function() {' . $jsString . '});});'
@@ -299,17 +310,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @return string
      */
-    private function _getVersion()
+    private function getVersion($name)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $moduleList = $objectManager
             ->get('Magento\Framework\Module\ModuleListInterface');
-        return $moduleList->getOne('GoMage_Feed')['setup_version'];
+        return $moduleList->getOne($name)['setup_version'];
     }
 
     public function getU()
     {
        return $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
     }
-
 }

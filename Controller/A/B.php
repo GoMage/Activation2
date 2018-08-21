@@ -35,6 +35,8 @@ class B extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
+
+
         try {
             $dataCustomer = $this->getRequest()->getParams('data_customer');
             $a = $this->helperData->proccess3($this->curl, $dataCustomer);

@@ -44,7 +44,6 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
         $i = trim($i,',');
         $url = $this->_scopeConfig->getValue('gomage_core_url/url_core').self::SERVER_URL.'?callback='.$this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
         $url .= '&d='. $base;
-        $url .= (strlen($i> 0))? '&p='.$i :'';
         $url .= '&k='. $this->_scopeConfig->getValue('gomage/key/act');
         /** @var \Magento\Backend\Block\Widget\Button $button */
         $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
