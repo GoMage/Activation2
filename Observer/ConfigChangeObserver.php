@@ -12,6 +12,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\App\RequestInterface;
 use GoMage\Core\Helper\Data;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
 
 class ConfigChangeObserver implements ObserverInterface
 {
@@ -26,20 +28,30 @@ class ConfigChangeObserver implements ObserverInterface
     private $request;
 
     private $helperData;
+
     /**
      * ConfigEdit constructor.
      * @param Curl $curl
      * @param RequestInterface $request
      */
-    public function __construct(Curl $curl, RequestInterface $request,  Data $helperData)
+    public function __construct(
+        Curl $curl,
+        RequestInterface $request,
+        Data $helperData,
+        ScopeConfigInterface $configEdit
+    )
     {
         $this->helperData = $helperData;
+        $this->configEdit = $configEdit;
         $this->curl = $curl;
         $this->request = $request;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $this->helperData->proccess2($this->curl);
+        $a = $this->helperData->process2($this->curl, $this->configEdit->getValue('gomage_processor/a'));
+        if($a) {
+           $a->process3($this->curl);
+        }
     }
 }

