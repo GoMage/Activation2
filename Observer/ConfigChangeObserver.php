@@ -26,6 +26,7 @@ class ConfigChangeObserver implements ObserverInterface
      * @var RequestInterface
      */
     private $request;
+    //private $processorA;
 
     private $helperData;
 
@@ -39,19 +40,22 @@ class ConfigChangeObserver implements ObserverInterface
         RequestInterface $request,
         Data $helperData,
         ScopeConfigInterface $configEdit
+       /// \GoMage\Core\Model\Processors\ProcessorA $processorA
     )
     {
         $this->helperData = $helperData;
         $this->configEdit = $configEdit;
         $this->curl = $curl;
         $this->request = $request;
+        //$this->processorA = $processorA;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $a = $this->helperData->process2($this->curl, $this->configEdit->getValue('gomage_processor/a'));
         if($a) {
-           $a->process3($this->curl);
+            $a->process3($this->curl);
         }
+        //$this->processorA->process3($this->curl);
     }
 }

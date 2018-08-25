@@ -16,6 +16,9 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <gomage_processor>
+            <a>ProcessorA</a>
+        </gomage_processor>
         <gomage_core_url>
             <url_core>http://gomagetest.loc</url_core>
         </gomage_core_url>

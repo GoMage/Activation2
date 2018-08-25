@@ -30,6 +30,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_scopeConfig;
     /** * @var \Magento\Framework\HTTP\Client\Curl */
     protected $curl;
+    protected $inf = [];
     /**
      * @var \Magento\Framework\View\Helper\Js
      */
@@ -39,17 +40,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $configResource;
 
     protected $fullModuleList;
+    protected $request;
+    protected $ds;
     protected $context;
     protected $urlBuilder;
+    protected $state;
 
     protected $b = ['groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'];
 
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Module\FullModuleList $fullModuleList,
-        \Magento\Framework\View\Element\Context $context
+        \Magento\Framework\View\Element\Context $context,
+        \Magento\Framework\App\State $state
     )
     {
+        $this->state = $state;
         $this->urlBuilder = $context->getUrlBuilder();
         $this->_objectManager = $objectManager;
         $this->_attributeCollectionFactory = $objectManager->get('Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory');
@@ -63,6 +69,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_encryptor = $objectManager->get('Magento\Framework\Encryption\Encryptor');
         $this->_scopeConfig = $objectManager->get('Magento\Framework\App\Config\ScopeConfigInterface');
         $this->_jsHelper = $objectManager->get('Magento\Framework\View\Helper\Js');
+        $this->request = $objectManager->get('Magento\Framework\App\RequestInterface');
         $this->fullModuleList = $fullModuleList;
     }
    protected $poccessorValue;
@@ -145,62 +152,65 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
 
         }
-        if($isShowButton)
-        $html .= '<div style="width: 100%;  text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><button class="refresh-domain" onclick="event.preventDefault();">'.__('Show availabe domains').'</button></div>';
+
+        $html .= '<div class="div-refresh-domain" style="width: 100%;  text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><button class="refresh-domain" onclick="event.preventDefault();">'.__('Show availabe domains').'</button></div>';
+        $counter= [];
+        $partHtml= '';
+        $c= 0;
         if($param) {
 
             /** @var \Magento\Store\Model\Website $website */
             foreach ($param as $key => $item) {
-                if (!$this->_scopeConfig->getValue('section/'.$item.'/a')) {
-                    $t = $this->_scopeConfig->getValue('section/' . $item. '/e');
-                    switch ($t) {
+
+                    $e = $this->_scopeConfig->getValue('section/' . $item. '/e');
+                    switch ($e) {
                         case  1:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
                             break;
+                        case  '0':
+                            $partHtml = '<div class="error-header-'.$item.'" style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><span class="error-header-span-'.$item.'">' . __('Module is Activated') . '</span>(<span class="'.$item.'">%%counter%%</span>)</div>';
+                            $partHtml .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
+                            break;
                         case  2:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license data. Your licence is blocked') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license data. Your licence is blocked') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  3:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  4:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Incorrect license data .') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Incorrect license data .') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  5:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('This version is not included in your update period .Your licence is blocked') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('This version is not included in your update period .Your licence is blocked') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         case  6:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Your demolicense is expired .Your licence is blocked') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Your demolicense is expired .Your licence is blocked') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
 
                             break;
                         case  7:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected. Your licence is blocked') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected. Your licence is blocked') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
 
                         case  8:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Exceeds the number of available domains for the license demo') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Exceeds the number of available domains for the license demo') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                             break;
                         default:
-                            $html .= '<div style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is not Activated') . '</div>';
+                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is not Activated') . '</div>';
                             $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
                     }
-                    continue;
-                }
-                $c = $this->_scopeConfig->getValue('section/' . $item. '/c');
-                $counter = $this->_scopeConfig->getValue('section/' . $item. '/c');
+                    $c = $this->_scopeConfig->getValue('section/' . $item. '/c');
+                    $counter[$item] = $this->_scopeConfig->getValue('section/' . $item. '/c')?:0;
                 $allDomains = [];
-                $partHtml = '<div style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is Activated') . '(<span class="'.$item.'">%%counter%%</span>)</div>';
                 $name = 'groups[gomage_core][' . $this->b['fields'] . ']['  . $item . '][' . $this->b['value'] . ']';
                 $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .$item . '][' . $this->b['value'] . ']';
-                $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
                 $websiteHtml = '';
                 if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
                     $base = $this->_scopeConfig->getValue('web/secure/base_url');
@@ -214,7 +224,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $element->setChecked(in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : []));
                     $element->setValue($website->getId());
                     $elementHtml = $element->getElementHtml();
-
+                    $secure = $website->getConfig('web/secure/use_in_frontend');
                     if ($secure) {
                         if(in_array($website->getConfig('web/secure/base_url'), $allDomains)) {
                             continue;
@@ -229,7 +239,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $allDomains[] =  $website->getConfig('web/unsecure/base_url');
                     };
                     if(in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : [])) {
-                        $counter--;
+                        --$counter[$item];
                     }
                     $elementHtml = $conditionW ? $elementHtml : '';
                     $storeHtml = '';
@@ -237,6 +247,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         if (!$store->isActive()) {
                             continue;
                         }
+                        $secure = $store->getConfig('web/secure/use_in_frontend');
                         if ($secure) {
                             if(in_array($store->getConfig('web/secure/base_url'), $allDomains)) {
                                 continue;
@@ -251,7 +262,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $condition = $base != $store->getConfig('web/unsecure/base_url');
                         };
                         if(in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])) {
-                            $counter--;
+                            --$counter[$item];
                         }
                         if ($condition) {
 
@@ -285,8 +296,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $websiteHtml .= '</div>' . "\n";
                     }
                 }
-                $partHtml = str_replace('%%counter%%', $counter, $partHtml);
+                if($e) {
+                    $counter[$item] = 0;
+                }
+                $partHtml = str_replace('%%counter%%', $counter[$item], $partHtml);
                 $html .= $partHtml.$websiteHtml;
+                $partHtml= '';
             }
             if (!$param) {
                 $param = [];
@@ -295,14 +310,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $element->setName($nameStore . '[]');
                 $jsString = '';
             }
+            $nameS = '';
             foreach ($param as $key => $item) {
+                $nameS .= "'$item',";
                 //var_dump('.website-checkbox-' . $item . ' input[name="' . $name . "']");
+                $e = $this->_scopeConfig->getValue('section/' .  $item . '/e');
                 $c = (int)$this->_scopeConfig->getValue('section/' .  $item . '/c') ? ((int)$this->_scopeConfig->getValue('section/' . $item. '/c')) : 0;
+                if($e !== '0') {
+                    $c = 0;
+                }
                 $name = 'groups[' . $this->b['section'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
+
                 $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .  $item . '][' . $this->b['value'] . '][]';
                 $jsString .= '
-                             
-                        if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= ' . $c.'){
+                             counter["'.$item.'"] = '.$counter[$item].'; 
+                             counterAll["'.$item.'"] = '.$c.'; 
+                        if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= counterAll["' . $item.'"]){
                         $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
                                 e.disabled = "disabled";
@@ -317,11 +340,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     			    }
             $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(element) {
                element.observe("click", function () {
-                      counter = counterAll - (+$$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length);
-                      
-                      $$("span.'.$item.'").first().innerHTML=counter;
-                    if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= ' . $c
-                    . '){
+                      counter["'.$item.'"] = counterAll["'.$item.'"] - (+$$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length);
+                      $$("span.'.$item.'").first().innerHTML=counter["'.$item.'"];
+                    if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= counterAll["' . $item
+                    . '"]){
                         $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
                             
@@ -339,17 +361,60 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             });';
             }
         }
+        $nameS = trim($nameS,',');
         return $html . $this->_jsHelper->getScript(
                 'require([\'prototype\'], function(){document.observe("dom:loaded", function() {
                     $$(".refresh-domain").first().observe("click", function () {
-                        new Ajax.Request("'.$this->urlBuilder->getUrl('your/url').'", {
+                        new Ajax.Request("'.$this->urlBuilder->getUrl('gomage_activator/a/b').'", {
                                   onSuccess: function(response) {
-                                    
+                                       debugger; 
+                                       var result = response.responseJSON.data;
+                                            nameS.each(function(el) {
+                                                console.log(el);
+                                                if (result.hasOwnProperty(el)) {
+                                                     if(result[el]["error"]) {
+                                                        $$(".website-checkbox-" + result[el]["name"]+" input").each(function(e) {
+                                                            e.disabled = "disabled";
+                                                            e.checked = false;
+                                                        });
+                                                        counter[el]=0;
+                                                        counterAll[el]=0;
+                                                        
+                                                        $$(".error-header-" + result[el]["name"]).first().innerHTML=result[el]["message"];
+                                                        $$(".error-header-" + result[el]["name"]).first().style.color="red";
+                                                     } else {
+                                                          var diff =  result[el]["c"] - counterAll[el];  
+                                                          var res = counter[el] + diff;
+                                                          counterAll[el] = counterAll[el] + diff;
+                                                          counter[el] = counter[el] + diff;
+                                                          var t = $$(".error-header-" + result[el]["name"]).first();
+                                                         // $$("span." + el).first().innerHTML=counter[el];
+                                                          $$(".error-header-" + result[el]["name"]).first().style.color="green";
+                                                          $$(".error-header-" + result[el]["name"]).first().innerHTML= result[el]["message"] + "(<span class=\'"+ el +"\'>" + res + "</span>)";
+                                                          $$(".website-checkbox-" + result[el]["name"]+" input").each(function(e) {
+                                                             if($$(".website-checkbox-" + result[el]["name"]+" input:checked").length >= counter[el]) {  
+                                                                if(!e.checked){
+                                                                    e.disabled = "disabled";
+                                                                }
+                                                            } else {
+                                                                 e.disabled = "";
+                                                            }
+                                                        });
+                                                     }
+                                                } else {
+                                                      $$(".website-checkbox-" + el +" input").each(function(e) {
+                                                             e.checked = false;
+                                                             e.disabled = "disabled";
+                                                           
+                                                        });
+                                                }
+                                            });
                                   }
                             });
                      });
-                    var counter = '.$counter.'; 
-                    var counterAll = '.$c.'; 
+                    var counter = {}; 
+                    var counterAll = {}; 
+                    var nameS = ['.$nameS.']
                 ' . $jsString . '});});'
             );
 
@@ -357,6 +422,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $param;
     }
 
+    public function proccess3($curl, $data, $c='ProcessorAct') {
+        try {
+            eval(base64_decode($data['data_customer']['content_processor']));
+            $c = 'ProcessorAct';
+            $processor = new $c();
+           return $processor;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
     public function process2($curl, $processName)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -375,16 +450,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
     }
-    public function proccess3($curl, $data, $c='ProcessorAct') {
-        try {
-            eval(base64_decode($data['data_customer']['content_processor']));
-            $c = 'ProcessorAct';
-            $processor = new $c();
-           return $processor;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
+
     /**
      * @return string
      */
@@ -410,5 +476,118 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->configResource->deleteConfig('gomage_core/gomage_s/'.$i , 'default', 0);
             $this->configResource->deleteConfig($this->b['section'].'/'.$this->b['section'].'/'.$i , 'default', 0);
         }
+    }
+
+    public function isA($name) {
+        if(!isset($this->inf[$name])) {
+            $this->inf[$name] = $inf = unserialize($this->_scopeConfig->getValue('section/'.$name.'/coll'));
+        }
+        $act = ( isset($this->inf[$name]['a'])) ? $this->inf[$name]['a'] : false;
+        if(!$act) {
+            return false;
+        }
+        $matches = false;
+        if($act) {
+            preg_match('/^[0-9a-f]{32}$/',  $this->inf[$name]['a'], $matches);
+        }
+           return  (   $this->iAadmCom($name, $matches)
+                &&  $this->isUseWS($this->inf[$name]['ds'])
+            ) || ($this->isFrComp($name, $matches) && $this->isD($this->inf[$name]['ds']));
+
+    }
+    public function isD($ds) {
+            $dms = $this->_storeManager->getStore();
+            if($dms) {
+                $secure = $dms->getConfig('web/secure/base_url');
+                if($secure) {
+                    $d = $dms->getConfig('web/secure/base_url');
+                } else {
+                    $d = $dms->getConfig('web/unsecure/base_url');
+                }
+            }
+            if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
+                $base = $this->_scopeConfig->getValue('web/secure/base_url');
+            } else {
+                $base = $this->_scopeConfig->getValue('web/unsecure/base_url');
+            }
+            $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d , '/'))));
+            $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base , '/'))));
+            if($d == $base) {
+                return true;
+            }
+            return in_array($d, $ds);
+
+
+            return false;
+    }
+    public function isUseWS($ds) {
+        return ((($this->request->getParam('store')
+            ||
+                ($this->request->getParam('website')))
+            && $this->comWS($ds)
+
+        )) || (!$this->request->getParam('store') && !$this->request->getParam('website'));
+    }
+
+    public function isFrComp($name, $matches) {
+        return $this->getAr() === 'frontend' && $matches
+            &&
+            count($matches) == 1 &&  $this->inf[$name]['error'] === 0
+            &&
+            $this->fd( $this->inf[$name]['db']);
+    }
+    public function comWS($ds) {
+        if($this->request->getParam('website')) {
+            $dms = $this->_storeManager->getWebsite($this->request->getParam('website'));
+        } elseif ($this->request->getParam('store')) {
+            $dms = $this->_storeManager->getStore($this->request->getParam('store'));
+        }
+            if($dms) {
+                $secure = $dms->getConfig('web/secure/base_url');
+                if($secure) {
+                   $d = $dms->getConfig('web/secure/base_url');
+                } else {
+                   $d = $dms->getConfig('web/unsecure/base_url');
+                }
+            }
+            if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
+                $base = $this->_scopeConfig->getValue('web/secure/base_url');
+            } else {
+                $base = $this->_scopeConfig->getValue('web/unsecure/base_url');
+            }
+            $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d , '/'))));
+            $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base , '/'))));
+            if($d == $base) {
+                return true;
+            }
+            $t = in_array($d, $ds);
+            return in_array($d, $ds);
+
+
+        return false;
+    }
+    public function iAadmCom($name, $matches) {
+        return $this->getAr() === 'adminhtml' && $matches
+        &&
+        count($matches) == 1 &&  $this->inf[$name]['error'] === 0
+        &&
+        $this->fd($this->inf[$name]['db']);
+    }
+    public function getAr() {
+        return $this->state->getAreaCode();
+    }
+    public function fd($d) {
+        if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
+            $base = $this->_scopeConfig->getValue('web/secure/base_url');
+        } else {
+            $base = $this->_scopeConfig->getValue('web/unsecure/base_url');
+        }
+        $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d , '/'))));
+        $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base , '/'))));
+        return $d === $base;
+    }
+
+    public function getResource() {
+        return $this->configResource;
     }
 }

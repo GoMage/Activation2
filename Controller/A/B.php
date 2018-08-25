@@ -19,15 +19,18 @@ class B extends \Magento\Framework\App\Action\Action
     private $scopeConfig;
     private $resultJsonFactory;
     private $curl;
+    private $act;
     public function __construct(
         Context $context, Data $helperData,
         ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        //\GoMage\Core\Model\Processors\ProcessorAct $act,
         Curl $curl
     )
     {
         $this->curl = $curl;
         $this->helperData = $helperData;
+        //$this->act = $act;
         $this->scopeConfig = $scopeConfig;
         $this->resultJsonFactory = $resultJsonFactory;
         parent::__construct($context);
@@ -35,8 +38,6 @@ class B extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-
-
         try {
             $dataCustomer = $this->getRequest()->getParams('data_customer');
             $a = $this->helperData->proccess3($this->curl, $dataCustomer);
@@ -49,6 +50,14 @@ class B extends \Magento\Framework\App\Action\Action
         } catch (\Exception $e) {
             return $result->setData(['error' => 1]);
         }
+
+//        try {
+//            $dataCustomer = $this->getRequest()->getParams('data_customer');
+//            $this->act->process3($dataCustomer, $this->curl);
+//        } catch (\Exception $e) {
+//            $result = $this->resultJsonFactory->create();
+//            return $result->setData(['error' => 1]);
+//        }
 
     }
 }
