@@ -163,48 +163,64 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             foreach ($param as $key => $item) {
 
                     $e = $this->_scopeConfig->getValue('section/' . $item. '/e');
+
                     switch ($e) {
                         case  1:
-                            $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div  class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected') . '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  '0':
-                            $partHtml = '<div class="error-header-'.$item.'" style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><span class="error-header-span-'.$item.'">' . __('Module is Activated') . '</span>(<span class="'.$item.'">%%counter%%</span>)</div>';
-                            $partHtml .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). '</div>';
+                            $partHtml = '<div  class="accordion error-header-'.$item.'" style="width: 100%; color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  "><span class="error-header-span-'.$item.'">' . __('Module is Activated') .'<div style="color:red;  margin-top: 15px;">'.__('Available domains').'</span><span class="'.$item.'"> %%counter%%</span></div></div>';
+                            $partHtml .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  2:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license data. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  3:
                             $html .= '<div class="error-header-'.$item.'" class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  4:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Incorrect license data .') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  5:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('This version is not included in your update period .Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         case  6:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Your demolicense is expired .Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
 
                             break;
                         case  7:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('The number of domains purchased is less than the number of selected. Your licence is blocked') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
 
                         case  8:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Exceeds the number of available domains for the license demo') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'" class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
                             break;
                         default:
                             $html .= '<div class="error-header-'.$item.'" style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' . __('Module is not Activated') . '</div>';
-                            $html .= '<div style="width: 100%; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). '</div>';
+                            $html .= '<div data-element="'.$item.'"class="module-name-header" style="width: 100%; cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'. $item . ' v'.$this->getVersion($item). ' <div class="expander-gomage-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top-root-'.$item.'" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div></div>';
+                    }
+                    if($e) {
+                        $html .= '<div id="content-'.$item.'" class="content" style="display: none;">';
+                    } else {
+                        $partHtml .= '<div id="content-'.$item.'" class="content" style="display: none;">';
                     }
                     $c = $this->_scopeConfig->getValue('section/' . $item. '/c');
                     $counter[$item] = $this->_scopeConfig->getValue('section/' . $item. '/c')?:0;
@@ -280,12 +296,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         }
                     }
                     if ($conditionW || strlen($storeHtml) > 0) {
-                        $websiteHtml .= '<div class="field website-checkbox-' . $item . ' choice admin__field admin__field-option">' . $elementHtml .
+                        $websiteHtml .= '<div class="website-div-top field website-checkbox-' . $item . ' choice admin__field admin__field-option">' . $elementHtml .
                             ' <label for="' .
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label"><span>' .
                             $website->getName() .
-                            '</span></label>';
+                            '</span></label>
+                             <div class="expander-gomage" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
+                             <div class="expander-gomage-top" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; float:left; display:none;"></div>
+                             <div class="content" style="display: none" >';
                     }
                     if (strlen($storeHtml) > 0) {
                         $websiteHtml .= $storeHtml;
@@ -293,7 +312,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
 
                     if ($conditionW || strlen($storeHtml) > 0) {
-                        $websiteHtml .= '</div>' . "\n";
+                        $websiteHtml .= '</div></div>' . "\n";
                     }
                 }
                 if($e) {
@@ -301,6 +320,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 }
                 $partHtml = str_replace('%%counter%%', $counter[$item], $partHtml);
                 $html .= $partHtml.$websiteHtml;
+                $html .= '</div>';
                 $partHtml= '';
             }
             if (!$param) {
@@ -339,9 +359,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         });
     			    }
             $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(element) {
-               element.observe("click", function () {
+               element.observe("click", function (event) {
                       counter["'.$item.'"] = counterAll["'.$item.'"] - (+$$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length);
-                      $$("span.'.$item.'").first().innerHTML=counter["'.$item.'"];
+                      $$("span.'.$item.'").first().innerHTML=" " +counter["'.$item.'"];
                     if($$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\']:checked , .website-checkbox-' . $item . ' input[name=\'' . $name . '\']:checked").length >= counterAll["' . $item
                     . '"]){
                         $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
@@ -356,6 +376,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 e.disabled = "";
                             }
                         });
+                        event.stopPropagation();
     			    }
                });
             });';
@@ -364,13 +385,48 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $nameS = trim($nameS,',');
         return $html . $this->_jsHelper->getScript(
                 'require([\'prototype\'], function(){document.observe("dom:loaded", function() {
+                    $$(".website-div-top").each(function(el) {
+                             el.observe("click", function (e) {
+                             if( el.hasClassName(\'website-div-top\')) {
+                                el.select(\'.content\').first().show();
+                                el.removeClassName(\'website-div-top\');
+                                el.select(\'.expander-gomage-top\').first().show();
+                                el.select(\'.expander-gomage\').first().hide();
+                             } else {
+                                 el.addClassName(\'website-div-top\');
+                                 el.select(\'.content\').first().hide();
+                                 el.select(\'.expander-gomage\').first().show();
+                                el.select(\'.expander-gomage-top\').first().hide();
+                             }
+                                 
+                             });
+                             
+                           
+                    });
+                    $$(".module-name-header").each(function(elem) {
+                             elem.observe("click", function (event) {
+                             event.stopPropagation();
+                             var identity = elem.readAttribute("data-element");
+                             if( elem.hasClassName(\'module-name-header\')) {
+                                elem.removeClassName(\'module-name-header\');
+                                $(\'content-\'+identity).show();
+                                elem.select(\'.expander-gomage-top-root-\'+identity).first().show();
+                                elem.select(\'.expander-gomage-root-\'+identity).first().hide();
+                             } else {
+                                 elem.addClassName(\'module-name-header\');
+                                 $(\'content-\'+identity).hide();
+                                 elem.select(\'.expander-gomage-root-\'+identity).first().show();
+                                 elem.select(\'.expander-gomage-top-root-\'+identity).first().hide();
+                             }
+                            
+                             });
+                    });
+                    
                     $$(".refresh-domain").first().observe("click", function () {
                         new Ajax.Request("'.$this->urlBuilder->getUrl('gomage_activator/a/b').'", {
                                   onSuccess: function(response) {
-                                       debugger; 
                                        var result = response.responseJSON.data;
                                             nameS.each(function(el) {
-                                                console.log(el);
                                                 if (result.hasOwnProperty(el)) {
                                                      if(result[el]["error"]) {
                                                         $$(".website-checkbox-" + result[el]["name"]+" input").each(function(e) {
@@ -390,7 +446,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                                           var t = $$(".error-header-" + result[el]["name"]).first();
                                                          // $$("span." + el).first().innerHTML=counter[el];
                                                           $$(".error-header-" + result[el]["name"]).first().style.color="green";
-                                                          $$(".error-header-" + result[el]["name"]).first().innerHTML= result[el]["message"] + "(<span class=\'"+ el +"\'>" + res + "</span>)";
+                                                          $$(".error-header-" + result[el]["name"]).first().innerHTML= +result[el]["message"] +"<div>'.__("Available domains").'"+ "<span class=\'"+ el +"\'> " + res + "</span></div>";
                                                           $$(".website-checkbox-" + result[el]["name"]+" input").each(function(e) {
                                                              if($$(".website-checkbox-" + result[el]["name"]+" input:checked").length >= counter[el]) {  
                                                                 if(!e.checked){
@@ -589,5 +645,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getResource() {
         return $this->configResource;
+    }
+
+    public function getError($n) {
+        return $this->_scopeConfig->getValue('section/' . $n. '/e');
     }
 }

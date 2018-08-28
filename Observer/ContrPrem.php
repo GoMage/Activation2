@@ -43,9 +43,10 @@ class ContrPrem implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $action = $observer->getControllerAction();
-        if($action->getRequest()->getParam('section') == 'gomage_core' || get_class($action)=='GoMage\Core') {
+        if($action->getRequest()->getParam('section') == 'gomage_core' || strpos(get_class($action),'GoMage\Core') === 0) {
             return;
         }
+      //  var_dump(str_pos(get_class($action, 'GoMage\Core') === 0));die;
         $controller = $action->getRequest()->getControllerName();
         if($controller == 'system_config'
             &&
@@ -76,7 +77,18 @@ class ContrPrem implements ObserverInterface
 
          ))
         ) {
-            $this->messageManager->addErrorMessage('Please activate extension in stores -> config -> gomage -> activation');
+            if($this->helperData->getAr()==='adminhtml') {
+                if($this->helperData->getError($resource) !== '0' && $this->helperData->getError($resource)) {
+                    $this->messageManager->addErrorMessage('Module is blocked please reactivate extension or contact support@gomage.com');
+                } else {
+                    $errorMsg = __('Please activate extension in stores -> config -> gomage -> activation <a href="%1">Back to activation</a> .',
+                        $action->getUrl('adminhtml/system_config/edit/section/gomage_core')
+                    );
+                    $this->messageManager->addError($errorMsg);
+                }
+
+
+            }
             $action->getRequest()->initForward();
             $action->getRequest()->setActionName('noroute');
             $action->getRequest()->setDispatched(false);
