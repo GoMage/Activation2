@@ -554,7 +554,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isD($ds) {
             $dms = $this->_storeManager->getStore();
             if($dms) {
-                $secure = $dms->getConfig('web/secure/base_url');
+                $secure = $dms->getConfig('web/secure/use_in_frontend');
                 if($secure) {
                     $d = $dms->getConfig('web/secure/base_url');
                 } else {
