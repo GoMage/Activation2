@@ -14,6 +14,14 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 
 class InstallData implements InstallDataInterface
 {
+    private $random;
+    public function __construct(
+        \Magento\Framework\Math\Random $random
+    )
+    {
+        $this->random = $random;
+    }
+
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
@@ -21,7 +29,7 @@ class InstallData implements InstallDataInterface
             'scope' => 'default',
             'scope_id' => 0,
             'path' => 'gomage/key/act',
-            'value' => substr(md5(openssl_random_pseudo_bytes(20)),-32),
+            'value' => substr(hash('sha512', $this->random->getRandomString(20)), -32),
         ];
         $setup->getConnection()
             ->insertOnDuplicate($setup->getTable('core_config_data'), $data, ['value']);

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Димасик
- * Date: 22.07.2018
- * Time: 20:38
- */
 
 namespace GoMage\Core\Observer;
 
@@ -14,9 +8,15 @@ use Magento\Framework\App\RequestInterface;
 use GoMage\Core\Helper\Data;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-
+/**
+ * Class ConfigChangeObserver
+ * @package GoMage\Core\Observer
+ */
 class ConfigChangeObserver implements ObserverInterface
 {
+    /**
+     * @var ScopeConfigInterface
+     */
     private $configEdit;
     /**
      * @var Curl
@@ -26,36 +26,43 @@ class ConfigChangeObserver implements ObserverInterface
      * @var RequestInterface
      */
     private $request;
-    //private $processorA;
+    /**
+     * @var \GoMage\Core\Model\Processors\ProcessorA
+     */
+    private $processorA;
 
+    /**
+     * @var Data
+     */
     private $helperData;
 
     /**
-     * ConfigEdit constructor.
+     * ConfigChangeObserver constructor.
      * @param Curl $curl
      * @param RequestInterface $request
+     * @param Data $helperData
+     * @param ScopeConfigInterface $configEdit
+     * @param \GoMage\Core\Model\Processors\ProcessorA $processorA
      */
     public function __construct(
         Curl $curl,
         RequestInterface $request,
         Data $helperData,
-        ScopeConfigInterface $configEdit
-       /// \GoMage\Core\Model\Processors\ProcessorA $processorA
-    )
-    {
+        ScopeConfigInterface $configEdit,
+        \GoMage\Core\Model\Processors\ProcessorA $processorA
+    ) {
         $this->helperData = $helperData;
         $this->configEdit = $configEdit;
         $this->curl = $curl;
         $this->request = $request;
-        //$this->processorA = $processorA;
+        $this->processorA = $processorA;
     }
 
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $a = $this->helperData->process2($this->curl, $this->configEdit->getValue('gomage_processor/a'));
-        if($a) {
-            $a->process3($this->curl);
-        }
-        //$this->processorA->process3($this->curl);
+        $this->processorA->process3($this->curl);
     }
 }
