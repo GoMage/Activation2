@@ -18,6 +18,7 @@ class ProcessorAct
     private $storeManager;
     private $jsonHelper;
     private $random;
+    private $serializer;
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
@@ -26,8 +27,10 @@ class ProcessorAct
         \Magento\Framework\Module\ModuleListInterface $fullModuleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\Math\Random $random
+        \Magento\Framework\Math\Random $random,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
+        $this->serializer = $serializer;
         $this->jsonHelper = $jsonHelper;
         $this->scopeConfig = $scopeConfig;
         $this->jsonFactory = $jsonFactory;
@@ -244,6 +247,6 @@ class ProcessorAct
 
     public function coll($data, $resource)
     {
-        $resource->saveConfig('section/' . $data['name'] . '/coll', serialize($data), 'default', 0);
+        $resource->saveConfig('section/' . $data['name'] . '/coll', $this->serializer->serialize($data), 'default', 0);
     }
 }

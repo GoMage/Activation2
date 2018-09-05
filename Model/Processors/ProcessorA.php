@@ -88,8 +88,10 @@ class ProcessorA
         \Magento\Config\Model\ResourceModel\Config $config,
         \Magento\Framework\Module\ModuleListInterface $fullModuleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Json\Helper\Data $jsonHelper
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
+        $this->serializer = $serializer;
         $this->jsonHelper = $jsonHelper;
         $this->scopeConfig = $scopeConfig;
         $this->jsonFactory = $jsonFactory;
@@ -311,7 +313,7 @@ class ProcessorA
      */
     public function coll($data, $resource)
     {
-        $resource->saveConfig('section/' . $data['name'] . '/coll', serialize($data), 'default', 0);
+        $resource->saveConfig('section/' . $data['name'] . '/coll', $this->serializer->serialize($data), 'default', 0);
     }
 
     /**

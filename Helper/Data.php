@@ -688,12 +688,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isA($name)
     {
-        if (isset($this->inf[$name])) {
-            $this->inf[$name] = $this
-                ->serializer
-                ->unserialize(($this->scopeConfig->getValue('section/' . $name . '/coll')));
-        } else{
-            return false;
+        if (!isset($this->inf[$name])) {
+            $t = $this->scopeConfig->getValue('section/' . $name . '/coll');
+            if($this->scopeConfig->getValue('section/' . $name . '/coll')) {
+                $this->inf[$name] = $this
+                    ->serializer
+                    ->unserialize(($this->scopeConfig->getValue('section/' . $name . '/coll')));
+            } else {
+                return false;
+            }
         }
 
         $act = (isset($this->inf[$name]['a'])) ? $this->inf[$name]['a'] : false;
