@@ -78,6 +78,8 @@ class ProcessorAct
                     if ($params['ns']) {
                         foreach ($this->getNamesWithoutVersion() as $a) {
                             $params['a'][$a] = $this->scopeConfig->getValue('section/'.$a.'/a');
+                            $params['ms'][$this->scopeConfig->getValue('section/'.$a.'/ms')] = $this->scopeConfig
+                                ->getValue('section/'.$a.'/ms');
                         }
                     }
                     $params = $this->jsonHelper->jsonEncode($params);
