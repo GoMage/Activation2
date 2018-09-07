@@ -33,20 +33,37 @@ class ContrPrem implements ObserverInterface
     private $structureData;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    private $dateTime;
+
+    /**
+     * @var \GoMage\Core\Model\Processors\ProcessorA
+     */
+    private $processors;
+
+
+    /**
      * ContrPrem constructor.
      * @param Data $helperData
      * @param ActionFlag $actionFlag
      * @param ManagerInterface $messageManager
      * @param StructureData $structureData
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \GoMage\Core\Model\Processors\ProcessorA $processors
      */
     public function __construct(
         Data $helperData,
         ActionFlag $actionFlag,
         ManagerInterface $messageManager,
-        StructureData $structureData
+        StructureData $structureData,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \GoMage\Core\Model\Processors\ProcessorA $processors
     ) {
+        $this->processors = $processors;
         $this->helperData = $helperData;
         $this->structureData = $structureData;
+        $this->dateTime  = $dateTime;
         $this->actionFlag = $actionFlag;
         $this->messageManager = $messageManager;
     }
@@ -58,6 +75,7 @@ class ContrPrem implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        $this->da();
         $action = $observer->getControllerAction();
         if ($action->getRequest()->getParam('section') == 'gomage_core' ||
             $action->getRequest()->getParam('section') == 'gomage_settings'
@@ -105,6 +123,26 @@ class ContrPrem implements ObserverInterface
             $action->getRequest()->initForward();
             $action->getRequest()->setActionName('noroute');
             $action->getRequest()->setDispatched(false);
+        }
+    }
+
+    /**
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function da()
+    {
+        $t= ((strtotime($this->dateTime->gmtDate())
+                - $this->helperData->getCon()->getValue('gomage_da/da/da')))/360;
+        if ($this->helperData->getAr() === 'adminhtml') {
+            if (!$this->helperData->getCon()->getValue('gomage_da/da/da')
+                ||
+                (((strtotime($this->dateTime->gmtDate())
+                        - $this->helperData->getCon()->getValue('gomage_da/da/da')))/360) > 24) {
+                $this->processors->process3($this->helperData->getCurl());
+                if (!$this->helperData->getCon()->getValue('gomage_da/da/da')) {
+                    $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate());
+                }
+            }
         }
     }
 }

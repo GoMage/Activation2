@@ -19,6 +19,8 @@ class ProcessorAct
     private $jsonHelper;
     private $random;
     private $serializer;
+    private $dateTime;
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
@@ -28,8 +30,10 @@ class ProcessorAct
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Math\Random $random,
-        \Magento\Framework\Serialize\SerializerInterface $serializer
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
+        $this->dateTime = $dateTime;
         $this->serializer = $serializer;
         $this->jsonHelper = $jsonHelper;
         $this->scopeConfig = $scopeConfig;
@@ -96,8 +100,10 @@ class ProcessorAct
 
                 if ($b) {
                     $error = 0;
+                    $success = 0;
                     foreach ($b as $key => $dm) {
                         if (isset($dm['error']) && !$dm['error']) {
+                            $success++;
                             $this->config->saveConfig('section/' .  $dm['name'] . '/c', $dm['c'], 'default', 0);
                             $this->config->saveConfig('section/' .  $dm['name'] . '/e', $dm['error'], 'default', 0);
                             if (isset($dm['a'])) {
@@ -124,6 +130,7 @@ class ProcessorAct
                         }
                     }
                 } else {
+                    $this->config->deleteConfig('gomage_da/da/da', 'default', 0);
                     $names = $this->getNamesWithoutVersion();
                     if ($names) {
                         foreach ($names as $iconf) {
@@ -137,7 +144,9 @@ class ProcessorAct
                     }
                     $result = $result->setData(['error' => 1]);
                 }
-
+                $this
+                    ->config
+                    ->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
                 $this->reinitableConfig->reinit();
                 return $result;
             }

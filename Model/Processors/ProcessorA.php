@@ -8,6 +8,7 @@ namespace GoMage\Core\Model\Processors;
  */
 class ProcessorA
 {
+
     const BASE_URL = '/api/rest';
     /**
      * @var array
@@ -72,6 +73,11 @@ class ProcessorA
     private $storeManager;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     */
+    private $dateTime;
+
+    /**
      * ProcessorA constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
@@ -80,6 +86,8 @@ class ProcessorA
      * @param \Magento\Framework\Module\ModuleListInterface $fullModuleList
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -89,8 +97,10 @@ class ProcessorA
         \Magento\Framework\Module\ModuleListInterface $fullModuleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer
+        \Magento\Framework\Serialize\SerializerInterface $serializer,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
+        $this->dateTime = $dateTime;
         $this->serializer = $serializer;
         $this->jsonHelper = $jsonHelper;
         $this->scopeConfig = $scopeConfig;
@@ -136,12 +146,14 @@ class ProcessorA
             );
             $b = $this->jsonHelper->jsonDecode($curl->getBody());
             if (isset($b['p']) && isset($b['p'][0])) {
-                $b = $this->jsonHelper->jsonDecode($b['p'][0], true);
+                $b = $this->jsonHelper->jsonDecode($b['p'][0]);
             }
             if ($b) {
                 $error = 0;
+                $success = 0;
                 foreach ($b as $key => $dm) {
                     if (isset($dm['error']) && !$dm['error']) {
+                        $success++;
                         $this->config->saveConfig('section/' . $dm['name'] . '/c', $dm['c'], 'default', 0);
                         $this->config->saveConfig('section/' . $dm['name'] . '/e', $dm['error'], 'default', 0);
                         if (isset($dm['a'])) {
@@ -185,7 +197,9 @@ class ProcessorA
                 }
                 $result = $result->setData(['error' => 1]);
             }
-
+            $this
+                ->config
+                ->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
             $this->reinitableConfig->reinit();
             return $result;
         } catch (\Exception $e) {

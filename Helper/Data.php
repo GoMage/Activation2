@@ -862,4 +862,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue('section/' . $n . '/e');
     }
+
+    public function getCurl()
+    {
+        return $this->curl;
+    }
+    public function getCon()
+    {
+        return $this->scopeConfig;
+    }
 }
