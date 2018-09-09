@@ -42,6 +42,10 @@ class ContrPrem implements ObserverInterface
      */
     private $processors;
 
+    /**
+     * @var \Magento\Framework\App\Config\ReinitableConfigInterface
+     */
+    private $reinitableConfig;
 
     /**
      * ContrPrem constructor.
@@ -51,6 +55,7 @@ class ContrPrem implements ObserverInterface
      * @param StructureData $structureData
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \GoMage\Core\Model\Processors\ProcessorA $processors
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
         Data $helperData,
@@ -58,8 +63,10 @@ class ContrPrem implements ObserverInterface
         ManagerInterface $messageManager,
         StructureData $structureData,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \GoMage\Core\Model\Processors\ProcessorA $processors
+        \GoMage\Core\Model\Processors\ProcessorA $processors,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $reinitableConfig
     ) {
+        $this->reinitableConfig = $reinitableConfig;
         $this->processors = $processors;
         $this->helperData = $helperData;
         $this->structureData = $structureData;
@@ -101,9 +108,9 @@ class ContrPrem implements ObserverInterface
         }
         if (isset($resource) && !$this->helperData->isA($resource)
             && (strpos(get_class($action), 'GoMage') === 0
-            || (            $controller == 'system_config'
-            && $action->getRequest()->getParam('section')
-            && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
+                || (            $controller == 'system_config'
+                    && $action->getRequest()->getParam('section')
+                    && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
         ) {
             if ($this->helperData->getAr()==='adminhtml') {
                 if ($this->helperData->getError($resource) !== '0' && $this->helperData->getError($resource)) {
@@ -131,16 +138,18 @@ class ContrPrem implements ObserverInterface
      */
     private function da()
     {
-        $t= ((strtotime($this->dateTime->gmtDate())
-                - $this->helperData->getCon()->getValue('gomage_da/da/da')))/360;
+        $t1 = strtotime($this->helperData->getCon()->getValue('gomage_da/da/da'));
+        $t2 = strtotime($this->dateTime->gmtDate());
+        $diff = (int)($t2 - $t1);
+        $hours = $diff/(60*60);
         if ($this->helperData->getAr() === 'adminhtml') {
             if (!$this->helperData->getCon()->getValue('gomage_da/da/da')
                 ||
-                (((strtotime($this->dateTime->gmtDate())
-                        - $this->helperData->getCon()->getValue('gomage_da/da/da')))/360) > 24) {
+                $hours > 24 ) {
                 $this->processors->process3($this->helperData->getCurl());
                 if (!$this->helperData->getCon()->getValue('gomage_da/da/da')) {
                     $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate());
+                    $this->reinitableConfig->reinit();
                 }
             }
         }
