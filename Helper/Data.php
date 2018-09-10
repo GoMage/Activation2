@@ -203,7 +203,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 1:
                         $html .= '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('The number of the purchased domains is less than the number of the selected domains') . '</div>';
+                            __('The number of purchased domains is lower than the number of selected domains')
+                            . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -233,7 +234,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 2:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
-                            . __('Inccorect  license data. Your licence is blocked. Please contact support@gomage.com') . '</div>';
+                            . __('Incorrect license data. Your license is blocked. Please contact support@gomage.com')
+                            . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) . ' 
@@ -246,7 +248,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 3:
                         $html .= '<div class="error-header-' . $item . '" class="error-header-' . $item . '" 
                         style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked. Please contact support@gomage.com') . '</div>';
+                        margin-top: 70px;  ">' .
+                            __('Incorrect license key. Your license is blocked. Please contact support@gomage.com')
+                            . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -272,9 +276,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              border-top: 0; float:left; display:none;"></div></div>';
                         break;
                     case 5:
+                        $mess =  __('The' .$item.' version'.$this->getVersion($item).' is not available within your'
+                            .'license upgrade period. Your license is blocked. Please contact support@gomage.com');
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('This version is not included in your update period. Your licence is blocked. Please contact support@gomage.com') .
+                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .$mess.
                             '</div>';
                         $html .=
                             '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
@@ -290,7 +295,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 6:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('Your demolicense expired. Please contact support@gomage.com') . '</div>';
+                            __('Your demo license expired. Please contact support@gomage.com') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -306,8 +311,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
                             . __(
-                                'The number of domains purchased is less than the number of selected. Your licence is'
-                                .'blocked. Please contact'
+                                'The number of purchased domains is lower than the number of selected domains.'.
+                                'Your license is blocked. Please contact support@gomage.com'
                             ) . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
@@ -544,7 +549,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $nameS = trim($nameS, ',');
         return $html .
             $this->jsHelper
-                 ->getScript('require([\'prototype\'], function(){document.observe("dom:loaded", function() {
+                ->getScript('require([\'prototype\'], function(){document.observe("dom:loaded", function() {
                     $$(".website-div-top").each(function(el) {
                              el.observe("click", function (e) {
                              if( el.hasClassName(\'website-div-top\')) {
@@ -632,7 +637,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                                      }
                                                 } else {
                                                       $$(".error-header-"+el).first().innerHTML="'.
-                                                        __("Module is not Activated").'"
+                    __("Module is not Activated").'"
                                                       $$(".error-header-"+el).first().style.color="red"  
                                                       $$(".error-header-"+el).each(function(e) {
                                                             if(!e.checked){

@@ -33,15 +33,13 @@ class ProcessorA
      */
     private $messagess = [
         0 => 'Module is Activated',
-        1 => 'The number of the purchased domains is less than the number of the selected domains',
-        2 => 'Inccorect  license data. Your licence is blocked. Please contact support@gomage.com',
-        3 => 'Inccorect  license key. Your licence is blocked. Please contact support@gomage.com',
+        1 => 'The number of purchased domains is lower than the number of selected domains',
+        2 => 'Incorrect license data. Your license is blocked. Please contact support@gomage.com',
+        3 => 'Incorrect license key. Your license is blocked. Please contact support@gomage.com',
         4 => 'Incorrect license data. Please contact support@gomage.com',
-        5 => 'This version is not included in your update period. Your licence is blocked.'
-            .' Please contact support@gomage.com',
-        6 => 'Your demolicense expired. Please contact support@gomage.com',
-        7 => 'The number of domains purchased is less than the number of selected.'
-            .'Your licence is blocked. Please contact',
+        6 => 'Your demo license expired. Please contact support@gomage.com ',
+        7 => 'The number of purchased domains is lower than the number of selected domains.'
+            . 'Your license is blocked. Please contact support@gomage.com',
         8 => 'Exceeds the number of available domains for the license demo',
         'default' => 'Module is not Activated',
     ];
@@ -176,7 +174,15 @@ class ProcessorA
                         $this->config->saveConfig('section/' . $dm['name'] . '/e', $dm['error'], 'default', 0);
                         $this->config->deleteConfig('section/' . $dm['name'] . '/coll', 'default', 0);
                         $this->config->saveConfig('section/' . $dm['name'] . '/c', $dm['c'], 'default', 0);
-                        $dm['message'] = $this->messagess[$dm['error']];
+                        if ($dm['error'] != 5) {
+                            $dm['message'] = $this->messagess[$dm['error']];
+                        }
+
+                        if ($dm['error'] == 5) {
+                            $dm['message'] = 'The '.$dm['name'] .' version'
+                                .$this->getVersion($dm['name']).
+                                ' is not available within your license upgrade period.';
+                        }
                         $this->r[$dm['name']] = $dm;
                     }
                     if ($error) {
@@ -205,7 +211,6 @@ class ProcessorA
             $this->reinitableConfig->reinit();
             return $result;
         } catch (\Exception $e) {
-            // var_dump($e->getMessage()); die;
             return $result->setData(['error' => 1]);
         }
     }
