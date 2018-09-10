@@ -203,7 +203,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 1:
                         $html .= '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('The number of domains purchased is less than the number of selected') . '</div>';
+                            __('The number of the purchased domains is less than the number of the selected domains') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -233,7 +233,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 2:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
-                            . __('Inccorect  license data. Your licence is blocked') . '</div>';
+                            . __('Inccorect  license data. Your licence is blocked. Please contact support@gomage.com') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) . ' 
@@ -246,7 +246,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 3:
                         $html .= '<div class="error-header-' . $item . '" class="error-header-' . $item . '" 
                         style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked') . '</div>';
+                        margin-top: 70px;  ">' . __('Inccorect  license key. Your licence is blocked. Please contact support@gomage.com') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -260,7 +260,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 4:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('Incorrect license data .') . '</div>';
+                            __('Incorrect license data. Please contact support@gomage.com.') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -274,7 +274,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 5:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('This version is not included in your update period .Your licence is blocked') .
+                            __('This version is not included in your update period. Your licence is blocked. Please contact support@gomage.com') .
                             '</div>';
                         $html .=
                             '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
@@ -290,7 +290,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     case 6:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
-                            __('Your demolicense is expired .Your licence is blocked') . '</div>';
+                            __('Your demolicense expired. Please contact support@gomage.com') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
                         margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
@@ -306,8 +306,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
                             . __(
-                                'The number of domains purchased is less' .
-                                ' than the number of selected. Your licence is blocked'
+                                'The number of domains purchased is less than the number of selected. Your licence is'
+                                .'blocked. Please contact'
                             ) . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 

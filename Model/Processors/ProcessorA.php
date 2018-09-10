@@ -33,13 +33,15 @@ class ProcessorA
      */
     private $messagess = [
         0 => 'Module is Activated',
-        1 => 'The number of domains purchased is less than the number of selected',
-        2 => 'Inccorect  license data. Your licence is blocked',
-        3 => 'Inccorect  license key. Your licence is blocked',
-        4 => 'Incorrect license data',
-        5 => 'This version is not included in your update period .Your licence is blocked',
-        6 => 'Your demolicense is expired .Your licence is blocked',
-        7 => 'The number of domains purchased is less than the number of selected. Your licence is blocked',
+        1 => 'The number of the purchased domains is less than the number of the selected domains',
+        2 => 'Inccorect  license data. Your licence is blocked. Please contact support@gomage.com',
+        3 => 'Inccorect  license key. Your licence is blocked. Please contact support@gomage.com',
+        4 => 'Incorrect license data. Please contact support@gomage.com',
+        5 => 'This version is not included in your update period. Your licence is blocked.'
+            .' Please contact support@gomage.com',
+        6 => 'Your demolicense expired. Please contact support@gomage.com',
+        7 => 'The number of domains purchased is less than the number of selected.'
+            .'Your licence is blocked. Please contact',
         8 => 'Exceeds the number of available domains for the license demo',
         'default' => 'Module is not Activated',
     ];
@@ -203,7 +205,7 @@ class ProcessorA
             $this->reinitableConfig->reinit();
             return $result;
         } catch (\Exception $e) {
-           // var_dump($e->getMessage()); die;
+            // var_dump($e->getMessage()); die;
             return $result->setData(['error' => 1]);
         }
     }
