@@ -149,6 +149,7 @@ class ProcessorA
                 $b = $this->jsonHelper->jsonDecode($b['p'][0]);
             }
             if ($b) {
+                $names = [];
                 $error = 0;
                 $success = 0;
                 foreach ($b as $key => $dm) {
@@ -189,6 +190,22 @@ class ProcessorA
                         $result = $result->setData(['error' => 1]);
                     } else {
                         $result = $result->setData(['success' => 1]);
+                    }
+                }
+                if ($this->getNamesWithoutVersion()) {
+                    if ($names) {
+                        $resultN = array_diff($this->getNamesWithoutVersion(), $names);
+                    } else {
+                        $resultN = $this->getNamesWithoutVersion();
+                    }
+
+                    foreach ($resultN as $iconf) {
+                        if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
+                            $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
+                        }
+                        $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
+                        $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
+                        $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
                     }
                 }
             } else {

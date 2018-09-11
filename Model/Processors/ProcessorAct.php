@@ -52,7 +52,7 @@ class ProcessorAct
         $curl->get(self::BASE_URL.$url);
         return $curl->getBody();
     }
-    
+
     public function process3($data, $curl)
     {
         try {
@@ -99,9 +99,11 @@ class ProcessorAct
                 }
 
                 if ($b) {
+                    $names = [];
                     $error = 0;
                     $success = 0;
                     foreach ($b as $key => $dm) {
+                        $names[] = $dm['name'];
                         if (isset($dm['error']) && !$dm['error']) {
                             $success++;
                             $this->config->saveConfig('section/' .  $dm['name'] . '/c', $dm['c'], 'default', 0);
@@ -129,6 +131,22 @@ class ProcessorAct
                             $result = $result->setData(['success' => 1]);
                         }
                     }
+                    if ($this->getNamesWithoutVersion()) {
+                        if ($names) {
+                            $resultN = array_diff($this->getNamesWithoutVersion(), $names);
+                        } else {
+                            $resultN = $this->getNamesWithoutVersion();
+                        }
+
+                        foreach ($resultN as $iconf) {
+                            if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
+                                $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
+                            }
+                            $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
+                            $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
+                            $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
+                        }
+                    }
                 } else {
                     $this->config->deleteConfig('gomage_da/da/da', 'default', 0);
                     $names = $this->getNamesWithoutVersion();
@@ -151,7 +169,7 @@ class ProcessorAct
                 return $result;
             }
         } catch (\Exception $e) {
-            return $result->setData(['error' => 1]);
+            $result->setData(['error' => 1]);
         }
         return $result->setData(['error' => 1]);
     }
