@@ -70,7 +70,7 @@ class B extends \Magento\Framework\App\Action\Action
 
         try {
             $dataCustomer = $this->getRequest()->getParams();
-            $this->act->process3($dataCustomer, $this->curl);
+            return $this->act->process3($dataCustomer, $this->curl);
         } catch (\Exception $e) {
             $result = $this->resultJsonFactory->create();
             return $result->setData(['error' => 1]);
