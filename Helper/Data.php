@@ -461,13 +461,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
-                            '</span></label>
-                             <div class="expander-gomage" style="width: 0;height: 0; margin-top: 5px; 
+                            '</span><div class="expander-gomage" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left ">
                              </div>
                              <div class="expander-gomage-top" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; 
-                             float:left; display:none;"></div>
+                             float:left; display:none;"></div></label>
                              <div class="content" style="display: none" >';
                     }
                     if ($storeHtml !== '') {
@@ -592,7 +591,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                           var c = counterAll[n];
                           elem = $("content-" + n);
                           var t = elem.select("input:checked").length;
-                         if(elem.select("input:checked").length <= c ) {
+                         if(elem.select("input:checked").length < c ) {
                              if(el.select("input").first().checked) {
                                 el.select("input").first().checked="";
                             } else {
