@@ -191,7 +191,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $stores = $this->getAvailableStores($param);
 
         $html .= '<div class="div-refresh-domain" style="width: 100%;  text-align: left;  font-size: 1.2em; 
-                  margin-bottom: 20px; margin-top: 70px;  "><button class="refresh-domain" 
+                  margin-bottom: 5px; margin-top: 70px;  "><button class="refresh-domain" 
                   onclick="event.preventDefault();">' . __('Show availabe domains') . '</button></div>';
         $counter = [];
         $partHtml = '';
@@ -202,12 +202,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 switch ($e) {
                     case 1:
                         $html .= '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">' .
                             __('The number of purchased domains is lower than the number of selected domains')
                             . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -217,13 +217,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case '0':
                         $partHtml = '<div  class="accordion error-header-' . $item . '" style="width: 100%; 
-                        color: green; text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">
+                        color: green; text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">
                         <span class="error-header-span-' . $item . '">' . __('Module is Activated') .
-                            '<div style="color:red;  margin-top: 15px;">' . __('Available domains') .
+                            '<div style="color:red;  margin-top: 25px;">' . __('Available domains') .
                             '</span><span class="' . $item . '"> %%counter%%</span></div></div>';
                         $partHtml .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -233,12 +233,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case 2:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">'
                             . __('Incorrect license data. Your license is blocked. Please contact support@gomage.com')
                             . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) . ' 
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) . ' 
                         <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; margin-top: 5px; 
                         border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
@@ -247,13 +247,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case 3:
                         $html .= '<div class="error-header-' . $item . '" class="error-header-' . $item . '" 
-                        style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' .
+                        style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' .
                             __('Incorrect license key. Your license is blocked. Please contact support@gomage.com')
                             . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item .
                             '" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; 
                         border-top-color: #adadad; border-bottom: 0; float:left "></div>
@@ -263,11 +263,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case 4:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">' .
                             __('Incorrect license data. Please contact support@gomage.com.') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -279,12 +279,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $mess =  __('The' .$item.' version'.$this->getVersion($item).' is not available within your'
                             .'license upgrade period. Your license is blocked. Please contact support@gomage.com');
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .$mess.
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">' .$mess.
                             '</div>';
                         $html .=
                             '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                            cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                            margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                            cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                            margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                             margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0;
                             float:left "></div>
@@ -294,11 +294,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case 6:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">' .
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">' .
                             __('Your demo license expired. Please contact support@gomage.com') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -309,14 +309,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     case 7:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red;
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">'
                             . __(
                                 'The number of purchased domains is lower than the number of selected domains.'.
                                 'Your license is blocked. Please contact support@gomage.com'
                             ) . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -327,11 +327,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                     case 8:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">'
                             . __('Exceeds the number of available domains for the license demo') . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                         float:left "></div>
@@ -341,11 +341,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         break;
                     default:
                         $html .= '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 20px; margin-top: 70px;  ">'
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 25px;  ">'
                             . __('Module is not Activated') . '</div>';
                         $html .= '<div data-element="' . $item . '"class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; 
-                        margin-top: 70px;  ">' . $item . ' v' . $this->getVersion($item) .
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        margin-top: 25px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
                          margin-top: 5px; border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; 
                          float:left "></div>
@@ -429,7 +429,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])
                             );
                             $element->setValue($store->getId());
-                            $storeHtml .= '<div class="field choice admin__field admin__field-option" 
+                            $storeHtml .= '<div data-namespace="'
+                                .$item.'" class=" label-store field choice admin__field admin__field-option" 
                                 style="margin-left: 10%">' . $element->getElementHtml() .
                                 ' <label for="' .
                                 $id . '_' . $store->getId() .
@@ -440,11 +441,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         }
                     }
                     if ($conditionW || $storeHtml !== '') {
-                        $websiteHtml .= '<div class="website-div-top field website-checkbox-' . $item .
+                        $websiteHtml .= '<div class="field website-checkbox-' . $item .
                             ' choice admin__field admin__field-option">' . $elementHtml .
-                            ' <label for="' .
+                            ' <label data-content-website="'.$item.'" for="' .
                             $id . '_' . $website->getId() .
-                            '" class="admin__field-label"><span>' .
+                            '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
                             '</span></label>
                              <div class="expander-gomage" style="width: 0;height: 0; margin-top: 5px; 
@@ -551,22 +552,53 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->jsHelper
                 ->getScript('require([\'prototype\'], function(){document.observe("dom:loaded", function() {
                     $$(".website-div-top").each(function(el) {
-                             el.observe("click", function (e) {
+                             el.on("click", function (e) {
+                             var stC = el.readAttribute("data-content-website");
+                             elem = $("content-" + stC);
                              if( el.hasClassName(\'website-div-top\')) {
-                                el.select(\'.content\').first().show();
+                                elem.select(\'.content\').first().show();
                                 el.removeClassName(\'website-div-top\');
-                                el.select(\'.expander-gomage-top\').first().show();
-                                el.select(\'.expander-gomage\').first().hide();
+                                elem.select(\'.expander-gomage-top\').first().show();
+                                elem.select(\'.expander-gomage\').first().hide();
                              } else {
                                  el.addClassName(\'website-div-top\');
-                                 el.select(\'.content\').first().hide();
-                                 el.select(\'.expander-gomage\').first().show();
-                                el.select(\'.expander-gomage-top\').first().hide();
+                                 elem.select(\'.content\').first().hide();
+                                 elem.select(\'.expander-gomage\').first().show();
+                                 elem.select(\'.expander-gomage-top\').first().hide();
                              }
                                  
                              });
                              
                            
+                    });
+                    $$(".label-store").each(function(el) {
+                         el.on("click", function () {
+                         debugger;
+                          var n = el.readAttribute("data-namespace");
+                          var c = counterAll[n];
+                          elem = $("content-" + n);
+                          var t = elem.select("input:checked").length;
+                         if(elem.select("input:checked").length <= c ) {
+                             if(el.select("input").first().checked) {
+                                el.select("input").first().checked="";
+                            } else {
+                                el.select("input").first().checked="checked";
+                                }
+                            } 
+                            counter[n] = counterAll[n] - (+(elem.select("input:checked").length))
+                            $$("."+n).first().innerHTML=" "+counter[n];
+                            if(elem.select("input:checked").length >= c ) {
+                                 elem.select("input").each(function(e) {
+                                 if(!e.checked) {
+                                     e.disabled = "disabled";
+                                 }
+                            });
+                           }  else {
+                                 elem.select("input").each(function(e) {
+                                     e.disabled = "";
+                            });
+                           }
+                         });
                     });
                     $$(".module-name-header").each(function(elem) {
                              elem.observe("click", function (event) {
