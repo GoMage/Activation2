@@ -1,12 +1,26 @@
 <?xml version="1.0"?>
-
+<!--
+/**
+ * GoMage.com
+ *
+ * GoMage Core M2
+ *
+ * @category  Extension
+ * @copyright Copyright (c) 2018-2018 GoMage.com (https://www.gomage.com)
+ * @author    GoMage.com
+ * @license   https://www.gomage.com/licensing  Single domain license
+ * @terms     of use https://www.gomage.com/terms-of-use
+ * @version   Release: 2.0.0
+ * @since     Class available since Release 2.0.0
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <gomage_processor>
             <a>ProcessorA</a>
         </gomage_processor>
         <gomage_core_url>
-            <url_core>http://gomagetest.loc</url_core>
+            <url_core>https://dev.gomage.com</url_core>
         </gomage_core_url>
     </default>
 </config>

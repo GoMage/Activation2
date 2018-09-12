@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * GoMage.com
+ *
+ * GoMage Core M2
+ *
+ * @category  Extension
+ * @copyright Copyright (c) 2018-2018 GoMage.com (https://www.gomage.com)
+ * @author    GoMage.com
+ * @license   https://www.gomage.com/licensing  Single domain license
+ * @terms     of use https://www.gomage.com/terms-of-use
+ * @version   Release: 2.0.0
+ * @since     Class available since Release 2.0.0
+ */
+
 namespace GoMage\Core\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
@@ -108,9 +122,9 @@ class ContrPrem implements ObserverInterface
         }
         if (isset($resource) && !$this->helperData->isA($resource)
             && (strpos(get_class($action), 'GoMage') === 0
-                || (            $controller == 'system_config'
-                    && $action->getRequest()->getParam('section')
-                    && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
+            || (            $controller == 'system_config'
+            && $action->getRequest()->getParam('section')
+            && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
         ) {
             if ($this->helperData->getAr()==='adminhtml') {
                 if ($this->helperData->getError($resource) !== '0' && $this->helperData->getError($resource)) {
