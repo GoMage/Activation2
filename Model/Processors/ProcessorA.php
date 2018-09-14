@@ -131,8 +131,8 @@ class ProcessorA
      */
     public function process3($curl)
     {
+        $result = $this->jsonFactory->create();
         try {
-            $result = $this->jsonFactory->create();
             $curl->addHeader("Authorization", "Bearer " .$this->scopeConfig
                     ->getValue('section/gomage_client/param'), 'default', 0);
             $curl->addHeader("Accept", "application/json ");

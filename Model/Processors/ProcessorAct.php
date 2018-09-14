@@ -69,8 +69,8 @@ class ProcessorAct
 
     public function process3($data, $curl)
     {
+        $result = $this->jsonFactory->create();
         try {
-            $result = $this->jsonFactory->create();
             if ($data['data_customer']['key'] && $data['data_customer']['key'] ==
                 $this->scopeConfig->getValue('gomage/key/act')
             ) {
