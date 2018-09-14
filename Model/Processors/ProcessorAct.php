@@ -194,7 +194,7 @@ class ProcessorAct
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (($nn || 0 === $nn) && $name != 'GoMage_Core') {
+            if (0 === $nn && $name != 'GoMage_Core') {
                 $n[$name] = $name.'_'.$this->getVersion($name);
             }
         }
@@ -241,9 +241,6 @@ class ProcessorAct
                         if ($domain && $b != $domain) {
                             $domains[$item][] = $domain;
                         }
-                        if ($domain && $b != $domain) {
-                            $domains[$item][] = $domain;
-                        }
                     }
                     foreach ($website->getStores() as $store) {
                         if ($store->isActive()) {
@@ -255,9 +252,6 @@ class ProcessorAct
                                     $url = $store->getConfig('web/unsecure/base_url');
                                 };
                                 $domain = trim(preg_replace('/^.*?\\/\\/(.*)?\\//', '$1', $url));
-                                if ($domain && $b != $domain) {
-                                    $domains[$item][] = $domain;
-                                }
                                 if ($domain && $b != $domain) {
                                     $domains[$item][] = $domain;
                                 }
