@@ -593,11 +593,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                           var t = elem.select("input:checked").length;
                          if(elem.select("input:checked").length < c ) {
                              if(el.select("input").first().checked) {
-                                el.select("input").first().checked="";
-                            } else {
-                                el.select("input").first().checked="checked";
+                                    el.select("input").first().checked="";
+                                } else {
+                                    el.select("input").first().checked="checked";
                                 }
-                            } 
+                            } else {
+                                el.select("input").first().checked="";
+                            }
                             counter[n] = counterAll[n] - (+(elem.select("input:checked").length))
                             $$("."+n).first().innerHTML=" "+counter[n];
                             if(elem.select("input:checked").length >= c ) {
