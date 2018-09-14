@@ -66,7 +66,7 @@ class ProcessorAct
         $curl->get(self::BASE_URL.$url);
         return $curl->getBody();
     }
-    
+
     public function process3($data, $curl)
     {
         try {
@@ -107,7 +107,7 @@ class ProcessorAct
                         $params
                     );
                     $b = $this->jsonHelper->jsonDecode($curl->getBody(), true);
-                    if (isset($b['p']) && isset($b['p'][0])) {
+                    if (isset($b['p'][0])) {
                         $b = $this->jsonHelper->jsonDecode($b['p'][0], true);
                     }
                 }
@@ -183,7 +183,7 @@ class ProcessorAct
                 return $result;
             }
         } catch (\Exception $e) {
-             $result->setData(['error' => 1]);
+            $result->setData(['error' => 1]);
         }
         return $result->setData(['error' => 1]);
     }

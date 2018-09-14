@@ -159,7 +159,7 @@ class ProcessorA
                 $params
             );
             $b = $this->jsonHelper->jsonDecode($curl->getBody());
-            if (isset($b['p']) && isset($b['p'][0])) {
+            if (isset($b['p'][0])) {
                 $b = $this->jsonHelper->jsonDecode($b['p'][0]);
             }
             if ($b) {
