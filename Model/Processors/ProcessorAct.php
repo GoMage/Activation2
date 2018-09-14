@@ -71,7 +71,7 @@ class ProcessorAct
     {
         $result = $this->jsonFactory->create();
         try {
-            if ($data['data_customer']['key'] && $data['data_customer']['key'] ==
+            if (isset($data['data_customer']) && $data['data_customer']['key'] && $data['data_customer']['key'] ==
                 $this->scopeConfig->getValue('gomage/key/act')
             ) {
                 $this->config
@@ -183,6 +183,7 @@ class ProcessorAct
                 return $result;
             }
         } catch (\Exception $e) {
+            var_dump($e->getMessage());die;
             $result->setData(['error' => 1]);
         }
         return $result->setData(['error' => 1]);
