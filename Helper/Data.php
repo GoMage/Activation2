@@ -461,10 +461,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
-                            '</span><div class="expander-gomage" style="width: 0;height: 0; margin-top: 5px; 
+                            '</span><div class="expander-gomage expander-gomage-'.$item.'" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left ">
                              </div>
-                             <div class="expander-gomage-top" style="width: 0;height: 0; margin-top: 5px; 
+                             <div class="expander-gomage-top expander-gomage-top-'.$item.'" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; 
                              float:left; display:none;"></div></label>
                              <div class="content content-key-'.$item.'" style="display: none" >';
@@ -568,16 +568,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              el.on("click", function (e) {
                              var stC = el.readAttribute("data-content-website");
                              elem = $("content-" + stC);
-                             if( el.hasClassName(\'website-div-top\')) {
-                                elem.select(\'.content-key-\'+stC).first().show();
+                             var  elemKey = elem.select(\'.content-key-\'+stC);
+                             
+                              if( el.hasClassName(\'website-div-top\')) {
+                                elemKey.first().show();
                                 el.removeClassName(\'website-div-top\');
-                                elem.select(\'.expander-gomage-top\').first().show();
-                                elem.select(\'.expander-gomage\').first().hide();
+                                $$(\'.expander-gomage-top-\'+stC).first().show();
+                                $$(\'.expander-gomage-\'+stC).first().hide();
                              } else {
                                  el.addClassName(\'website-div-top\');
-                                 elem.select(\'.content-key-\'+stC).first().hide();
-                                 elem.select(\'.expander-gomage\').first().show();
-                                 elem.select(\'.expander-gomage-top\').first().hide();
+                                 $$(\'.content-key-\'+stC).first().hide();
+                                 $$(\'.expander-gomage-\'+stC).first().show();
+                                 $$(\'.expander-gomage-top-\'+stC).first().hide();
                              }
                                  
                              });
