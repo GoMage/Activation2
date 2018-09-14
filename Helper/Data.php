@@ -457,17 +457,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     if ($conditionW || $storeHtml !== '') {
                         $websiteHtml .= '<div class="field website-checkbox-' . $item .
                             ' choice admin__field admin__field-option">' . $elementHtml .
-                            ' <label data-content-website="'.$item.'" for="' .
+                            ' <label data-content-website="'.$item.'"  data-website-id="'.$website->getId().'" for="' .
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
-                            '</span><div class="expander-gomage expander-gomage-'.$item.'" style="width: 0;height: 0; margin-top: 5px; 
+                            '</span><div class="expander-gomage expander-gomage-'.$item.'-'.$website->getId()
+                            .'" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left ">
                              </div>
-                             <div class="expander-gomage-top expander-gomage-top-'.$item.'" style="width: 0;height: 0; margin-top: 5px; 
+                             <div class="expander-gomage-top expander-gomage-top-'.$item.'-'
+                            .$website->getId().'" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; 
                              float:left; display:none;"></div></label>
-                             <div class="content content-key-'.$item.'" style="display: none" >';
+                             <div class="content content-key-'.$item.'-'.$website->getId().'" style="display: none" >';
                     }
                     if ($storeHtml !== '') {
                         $websiteHtml .= $storeHtml;
@@ -567,19 +569,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $$(".website-div-top").each(function(el) {
                              el.on("click", function (e) {
                              var stC = el.readAttribute("data-content-website");
+                             var wId = el.readAttribute("data-website-id");
                              elem = $("content-" + stC);
-                             var  elemKey = elem.select(\'.content-key-\'+stC);
+                             var  elemKey = elem.select(\'.content-key-\'+stC+"-"+wId);
                              
                               if( el.hasClassName(\'website-div-top\')) {
                                 elemKey.first().show();
                                 el.removeClassName(\'website-div-top\');
-                                $$(\'.expander-gomage-top-\'+stC).first().show();
-                                $$(\'.expander-gomage-\'+stC).first().hide();
+                                $$(\'.expander-gomage-top-\'+stC+"-"+wId).first().show();
+                                $$(\'.expander-gomage-\'+stC+"-"+wId).first().hide();
                              } else {
                                  el.addClassName(\'website-div-top\');
-                                 $$(\'.content-key-\'+stC).first().hide();
-                                 $$(\'.expander-gomage-\'+stC).first().show();
-                                 $$(\'.expander-gomage-top-\'+stC).first().hide();
+                                 $$(\'.content-key-\'+stC+"-"+wId).first().hide();
+                                 $$(\'.expander-gomage-\'+stC+"-"+wId).first().show();
+                                 $$(\'.expander-gomage-top-\'+stC+"-"+wId).first().hide();
                              }
                                  
                              });
