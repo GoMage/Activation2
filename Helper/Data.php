@@ -467,7 +467,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              <div class="expander-gomage-top" style="width: 0;height: 0; margin-top: 5px; 
                              border: 8px solid transparent; border-bottom-color: #adadad; border-top: 0; 
                              float:left; display:none;"></div></label>
-                             <div class="content" style="display: none" >';
+                             <div class="content content-key-'.$item.'" style="display: none" >';
                     }
                     if ($storeHtml !== '') {
                         $websiteHtml .= $storeHtml;
@@ -569,13 +569,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              var stC = el.readAttribute("data-content-website");
                              elem = $("content-" + stC);
                              if( el.hasClassName(\'website-div-top\')) {
-                                elem.select(\'.content\').first().show();
+                                elem.select(\'.content-key-\'+stC).first().show();
                                 el.removeClassName(\'website-div-top\');
                                 elem.select(\'.expander-gomage-top\').first().show();
                                 elem.select(\'.expander-gomage\').first().hide();
                              } else {
                                  el.addClassName(\'website-div-top\');
-                                 elem.select(\'.content\').first().hide();
+                                 elem.select(\'.content-key-\'+stC).first().hide();
                                  elem.select(\'.expander-gomage\').first().show();
                                  elem.select(\'.expander-gomage-top\').first().hide();
                              }
