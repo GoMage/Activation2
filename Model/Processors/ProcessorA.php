@@ -167,6 +167,7 @@ class ProcessorA
                 $error = 0;
                 $success = 0;
                 foreach ($b as $key => $dm) {
+                    $names[] = $dm['name'];
                     if (isset($dm['error']) && !$dm['error']) {
                         $success++;
                         $this->config->saveConfig('section/' . $dm['name'] . '/c', $dm['c'], 'default', 0);
