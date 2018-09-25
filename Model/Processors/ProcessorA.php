@@ -100,7 +100,6 @@ class ProcessorA
      * @param \Magento\Framework\Module\ModuleListInterface $fullModuleList
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      */
     public function __construct(
@@ -111,11 +110,9 @@ class ProcessorA
         \Magento\Framework\Module\ModuleListInterface $fullModuleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
     ) {
         $this->dateTime = $dateTime;
-        $this->serializer = $serializer;
         $this->jsonHelper = $jsonHelper;
         $this->scopeConfig = $scopeConfig;
         $this->jsonFactory = $jsonFactory;
@@ -150,6 +147,16 @@ class ProcessorA
             if ($params['ns']) {
                 foreach ($this->getNamesWithoutVersion() as $a) {
                     $params['a'][$a] = $this->scopeConfig->getValue('section/' . $a . '/a');
+                    $params['ns'] = $this->getNames();
+                    if ($params['ns']) {
+                        foreach ($this->getNamesWithoutVersion() as $a) {
+                            $params['a'][$a] = $this->scopeConfig->getValue('section/'.$a.'/a');
+                            if($this->scopeConfig->getValue('section/'.$a.'/ms')){
+                                $params['ms'][$this->scopeConfig->getValue('section/'.$a.'/ms')] = $this->scopeConfig
+                                    ->getValue('section/'.$a.'/ms');
+                            }
+                        }
+                    }
                 }
             }
             $params = $this->jsonHelper->jsonEncode($params);
@@ -366,7 +373,7 @@ class ProcessorA
      */
     public function coll($data, $resource)
     {
-        $resource->saveConfig('section/' . $data['name'] . '/coll', $this->serializer->serialize($data), 'default', 0);
+        $resource->saveConfig('section/' . $data['name'] . '/coll', @serialize($data), 'default', 0);
     }
 
     /**

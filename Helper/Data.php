@@ -123,7 +123,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\HTTP\Client\Curl $curl,
         \Magento\Framework\Encryption\Encryptor $encryptor,
         \Magento\Framework\View\Helper\Js $jsHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Magento\Backend\Model\UrlInterface $backendUrl
     ) {
         parent::__construct($context);
@@ -140,7 +139,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->encryptor = $encryptor;
         $this->jsHelper = $jsHelper;
         $this->fullModuleList = $fullModuleList;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -746,11 +744,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isA($name)
     {
         if (!isset($this->inf[$name])) {
-            $t = $this->scopeConfig->getValue('section/' . $name . '/coll');
-            if($this->scopeConfig->getValue('section/' . $name . '/coll')) {
-                $this->inf[$name] = $this
-                    ->serializer
-                    ->unserialize(($this->scopeConfig->getValue('section/' . $name . '/coll')));
+            if ($this->scopeConfig->getValue('section/' . $name . '/coll')) {
+                $this->inf[$name] = @unserialize(($this->scopeConfig->getValue('section/' . $name . '/coll')));
             } else {
                 return false;
             }
