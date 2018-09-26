@@ -122,9 +122,9 @@ class ContrPrem implements ObserverInterface
         }
         if (isset($resource) && !$this->helperData->isA($resource)
             && (strpos(get_class($action), 'GoMage') === 0
-            || (            $controller == 'system_config'
-            && $action->getRequest()->getParam('section')
-            && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
+                || (            $controller == 'system_config'
+                    && $action->getRequest()->getParam('section')
+                    && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
         ) {
             if ($this->helperData->getAr()==='adminhtml') {
                 if ($this->helperData->getError($resource) !== '0' && $this->helperData->getError($resource)) {
@@ -162,7 +162,7 @@ class ContrPrem implements ObserverInterface
                 $hours > 24 ) {
                 $this->processors->process3($this->helperData->getCurl());
                 if (!$this->helperData->getCon()->getValue('gomage_da/da/da')) {
-                    $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate());
+                    $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
                     $this->reinitableConfig->reinit();
                 }
             }
