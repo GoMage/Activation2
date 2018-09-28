@@ -67,9 +67,10 @@ class ProcessorAct
 
     public function process3($data, $curl)
     {
+        var_dump($data);die;
         $result = $this->jsonFactory->create();
         try {
-            if (isset($data['data_customer']) && $data['data_customer']['key'] && $data['data_customer']['key'] ==
+            if (isset($data['key']) && $data['key'] && $data['key'] ==
                 $this->scopeConfig->getValue('gomage/key/act')
             ) {
                 $this->config
@@ -79,17 +80,17 @@ class ProcessorAct
                         'default',
                         0
                     );
-                $this->config->saveConfig('section/gomage_client/param', $data['data_customer']['param'], 'default', 0);
-                $curl->addHeader("Authorization", "Bearer ".$data['data_customer']['param']);
+                $this->config->saveConfig('section/gomage_client/param', $data['param'], 'default', 0);
+                $curl->addHeader("Authorization", "Bearer ".$data['param']);
                 $curl->addHeader("Accept", "application/json ");
                 $curl->addHeader("Content-Type", "application/json ");
                 $b = false;
-                if (isset($data['data_customer']['cu']) && isset($data['data_customer']['d'])) {
-                    $b = trim(preg_replace('/^.*?\\/\\/(.*)?\\//', '$1', $data['data_customer']['d']));
+                if (isset($data['cu']) && isset($data['d'])) {
+                    $b = trim(preg_replace('/^.*?\\/\\/(.*)?\\//', '$1', $data['d']));
                     $ds = $this->_getDomainsAviable($b);
                     $params['ds'] = $ds;
-                    $params['cu'] = $data['data_customer']['cu'];
-                    $params['d'] =  $data['data_customer']['d'];
+                    $params['cu'] = $data['cu'];
+                    $params['d'] =  $data['d'];
                     $params['ns'] = $this->getNames();
                     if ($params['ns']) {
                         foreach ($this->getNamesWithoutVersion() as $a) {
