@@ -19,7 +19,7 @@ namespace GoMage\Core\Controller\Adminhtml\A;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
 use GoMage\Core\Model\Processors\ProcessorA;
-use Magento\Framework\HTTP\Client\Curl;
+use \GoMage\Core\Model\CurlFix;
 use GoMage\Core\Helper\Data;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
@@ -34,7 +34,7 @@ class B extends Action
         Action\Context $context,
         JsonFactory $resultJsonFactory,
         ProcessorA $processorA,
-        Curl $curl,
+        CurlFix $curl,
         Data $helperData,
         ScopeConfigInterface $scopeConfig
     ) {

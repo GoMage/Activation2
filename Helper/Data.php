@@ -120,7 +120,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\HTTP\Client\Curl $curl,
+        \GoMage\Core\Model\CurlFix $curl,
         \Magento\Framework\Encryption\Encryptor $encryptor,
         \Magento\Framework\View\Helper\Js $jsHelper,
         \Magento\Backend\Model\UrlInterface $backendUrl

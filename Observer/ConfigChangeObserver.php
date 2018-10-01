@@ -17,7 +17,7 @@
 namespace GoMage\Core\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\HTTP\Client\Curl;
+use GoMage\Core\Model\CurlFix;
 use Magento\Framework\App\RequestInterface;
 use GoMage\Core\Helper\Data;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -59,7 +59,7 @@ class ConfigChangeObserver implements ObserverInterface
      * @param \GoMage\Core\Model\Processors\ProcessorA $processorA
      */
     public function __construct(
-        Curl $curl,
+        CurlFix $curl,
         RequestInterface $request,
         Data $helperData,
         ScopeConfigInterface $configEdit,
