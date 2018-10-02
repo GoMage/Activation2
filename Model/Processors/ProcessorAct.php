@@ -67,7 +67,6 @@ class ProcessorAct
 
     public function process3($data, $curl)
     {
-        var_dump($data);die;
         $result = $this->jsonFactory->create();
         try {
             if (isset($data['key']) && $data['key'] && $data['key'] ==
