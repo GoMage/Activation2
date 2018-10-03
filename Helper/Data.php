@@ -205,7 +205,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $html .= '<div class="div-refresh-domain" style="width: 70%;  text-align: left;  font-size: 1.2em; 
                   margin-bottom: 5px;"><button class="refresh-domain" 
                   onclick="event.preventDefault();">' . __('Show availabe domains')
-            . '</button></div>'.'<div style="font-size: 20px; margin-top: 15px;">Installed Extensions</div>';
+            . '</button></div>'.'<div style="font-size: 20px; margin-top: 15px; font-weight: bold">'
+            .__('Installed Extensions').'</div>';
         $counter = [];
         $partHtml = '';
         if ($param) {
