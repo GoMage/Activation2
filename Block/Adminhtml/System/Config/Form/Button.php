@@ -76,7 +76,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
         $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')
             ->setData(
                 [
-                    'label' => __('Click for activate'),
+                    'label' => __('Activate Extensions'),
                     'class' => 'activate',
                 ]
             );
