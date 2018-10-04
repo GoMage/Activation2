@@ -76,10 +76,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private $fullModuleList;
     /**
-     * @var \Magento\Framework\Serialize\SerializerInterface
-     */
-    private $serializer;
-    /**
      * @var \Magento\Framework\App\State
      */
     private $state;
@@ -91,6 +87,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $b = [
         'groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'
     ];
+
 
     /**
      * Data constructor.
@@ -104,10 +101,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Framework\HTTP\Client\Curl $curl
+     * @param \GoMage\Core\Model\CurlFix $curl
      * @param \Magento\Framework\Encryption\Encryptor $encryptor
      * @param \Magento\Framework\View\Helper\Js $jsHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param \Magento\Backend\Model\UrlInterface $backendUrl
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory,
