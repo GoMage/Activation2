@@ -202,15 +202,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $websites = $this->getAvailableWebsites($param);
         $stores = $this->getAvailableStores($param);
 
-        $html .= '<div class="div-refresh-domain" style="width: 70%;  text-align: left;  font-size: 1.2em; 
-                  margin-bottom: 5px;"><button class="refresh-domain" 
-                  onclick="event.preventDefault();">' . __('Show availabe domains')
-            . '</button></div>'.'<div style="font-size: 20px; margin-top: 15px; font-weight: bold">'
-            .__('Installed Extensions').'</div>';
+        $html .= '<div class="div-refresh-domain" style="width: 100%; height: 20px; text-align: left;  font-size: 10px; 
+                  margin-bottom: 35px;"><button class="refresh-domain" 
+                  onclick="event.preventDefault();">' . __('Show available domains')
+            . '</button></div>';
         $counter = [];
         $partHtml = '';
         if ($param) {
             foreach ($param as $key => $item) {
+                if(!$this->getVersion($item)) {
+                    continue;
+                }
                 $e = $this->scopeConfig->getValue('section/' . $item . '/e');
 
                 switch ($e) {
@@ -224,7 +226,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
-                        float:left "></div>'
+                        float:left; margin-right: 3%"></div>'
                             .'<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
                              border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
@@ -240,10 +242,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
-                        float:left "></div>'
-                            .'<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                        float:left; margin-right: 3%"></div>'
+                            .'<span class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
                               margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                              border-top: 0; float:left; display:none;"></div></div>'.$partHtmlHeader;
+                              border-top: 0; float:left; display:none; margin-right: 3%"></span></div>'.$partHtmlHeader;
                         break;
                     case 2:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
@@ -457,19 +459,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     }
                     if ($conditionW || $storeHtml !== '') {
                         $websiteHtml .= '<div class="field website-checkbox-' . $item .
-                            ' choice admin__field admin__field-option">' . $elementHtml .
+                            ' choice admin__field admin__field-option"></span>' . $elementHtml .
                             ' <label data-content-website="'.$item.'"  data-website-id="'.$website->getId().'" for="' .
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
-                            '</span><div class="expander-gomage expander-gomage-'.$item.'-'.$website->getId()
+                            '
+                            <div class="expander-gomage expander-gomage-'.$item.'-'.$website->getId()
                             .'" style="width: 0;height: 0; margin-top: 5px; 
-                             border: 6px solid transparent; border-top-color: #adadad; border-bottom: 0; float:left ">
+                             border: 6px solid transparent; border-top-color: #adadad; border-bottom: 0; float: left; margin-right: 3% ;
+                             ">
                              </div>
-                             <div class="expander-gomage-top expander-gomage-top-'.$item.'-'
+                             <span class="expander-gomage-top expander-gomage-top-'.$item.'-'
                             .$website->getId().'" style="width: 0;height: 0; margin-top: 5px; 
                              border: 6px solid transparent; border-bottom-color: #adadad; border-top: 0; 
-                             float:left; display:none;"></div></label>
+                             float:left; display:none; margin-right: 3%"></span></label>
                              <div class="content content-key-'.$item.'-'.$website->getId().'" style="display: none" >';
                     }
                     if ($storeHtml !== '') {
@@ -570,6 +574,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ->getScript('require([\'prototype\'], function(){document.observe("dom:loaded", function() {
                     $$(".website-div-top").each(function(el) {
                              el.on("click", function (e) {
+                              e.stopPropagation();
                              var stC = el.readAttribute("data-content-website");
                              var wId = el.readAttribute("data-website-id");
                              elem = $("content-" + stC);
@@ -592,8 +597,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                            
                     });
                     $$(".label-store").each(function(el) {
-                         el.on("click", function () {
-                         debugger;
+                         el.on("click", function (event) {
+                          event.stopPropagation();;
                           var n = el.readAttribute("data-namespace");
                           var c = counterAll[n];
                           elem = $("content-" + n);
@@ -624,6 +629,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     });
                     $$(".module-name-header").each(function(elem) {
                              elem.observe("click", function (event) {
+                             
                              event.stopPropagation();
                              var identity = elem.readAttribute("data-element");
                              if( elem.hasClassName(\'module-name-header\')) {
@@ -641,12 +647,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              });
                     });
                     
-                    $$(".refresh-domain").first().observe("click", function () {
+                    $$(".refresh-domain").first().observe("click", function (event) {
+                      event.stopPropagation();
                         new Ajax.Request("' . $this->backendUrl->getUrl('gomage_activator/a/b') . '", {
                                   onSuccess: function(response) {
                                        var result = response.responseJSON.data;
                                             nameS.each(function(el) {
-                                            debugger;
                                                     
                                                 if (result.hasOwnProperty(el)) {
                                                      if(result[el]["error"]) {

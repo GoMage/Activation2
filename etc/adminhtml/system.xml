@@ -24,7 +24,7 @@
             <tab>gomage</tab>
             <resource>GoMage_Core::gomage_core</resource>
             <group id="api" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="10" translate="label">
-                <label>GoMage Client M2 v.2.0.0</label>
+                <label>GoMage Activation v.2.0.0</label>
                 <field id="websites" translate="label comment" type="checkbox" sortOrder="20" showInDefault="1">
                     <source_model>Magento\Config\Model\Config\Source\Website</source_model>
                     <frontend_model>GoMage\Core\Block\Adminhtml\Form\Element\Website</frontend_model>

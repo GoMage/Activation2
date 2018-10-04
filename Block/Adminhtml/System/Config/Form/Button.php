@@ -69,7 +69,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
             }
         }
         $url = $this->_scopeConfig
-            ->getValue('gomage_core_url/url_core') . self::SERVER_URL . '?callback=' .
+                ->getValue('gomage_core_url/url_core') . self::SERVER_URL . '?callback=' .
             $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
         $url .= '&d=' . $base;
         $url .= '&k=' . $this->_scopeConfig->getValue('gomage/key/act');
@@ -78,6 +78,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
                 [
                     'label' => __('Activate Extensions'),
                     'class' => 'activate',
+                    'style' => 'height:30px;'
                 ]
             );
         $button->setOnClick('setLocation(\' ' . $url . '\')');
