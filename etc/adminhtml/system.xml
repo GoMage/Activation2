@@ -20,7 +20,7 @@
             <label>GoMage</label>
         </tab>
         <section id="gomage_core" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="1001" translate="label">
-            <label>Activation</label>
+            <label>Activation 2.0</label>
             <tab>gomage</tab>
             <resource>GoMage_Core::gomage_core</resource>
             <group id="api" showInDefault="1" showInStore="0" showInWebsite="0" sortOrder="10" translate="label">
