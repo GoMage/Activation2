@@ -500,6 +500,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $nameS = '';
             foreach ($param as $key => $item) {
+                if(!$this->getVersion($item)) {
+                    continue;
+                }
                 $nameS .= "'$item',";
                 $e = $this->scopeConfig->getValue('section/' . $item . '/e');
                 $c = (int)$this->scopeConfig->getValue('section/' . $item .
