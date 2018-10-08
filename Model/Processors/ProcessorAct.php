@@ -103,7 +103,7 @@ class ProcessorAct
                     $params = $this->jsonHelper->jsonEncode($params);
                     $curl->post(
                         $this->scopeConfig->getValue('gomage_core_url/url_core') . self::BASE_URL .
-                        '/act/add?XDEBUG_SESSION_START=PHPSTORM',
+                        '/act/add',
                         $params
                     );
                     $b = $this->jsonHelper->jsonDecode($curl->getBody(), true);
