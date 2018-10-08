@@ -32,7 +32,6 @@ class ProcessorAct
     private $storeManager;
     private $jsonHelper;
     private $random;
-    private $serializer;
     private $dateTime;
 
     public function __construct(
@@ -94,7 +93,7 @@ class ProcessorAct
                     if ($params['ns']) {
                         foreach ($this->getNamesWithoutVersion() as $a) {
                             $params['a'][$a] = $this->scopeConfig->getValue('section/'.$a.'/a');
-                            if($this->scopeConfig->getValue('section/'.$a.'/ms')){
+                            if ($this->scopeConfig->getValue('section/'.$a.'/ms')) {
                                 $params['ms'][$this->scopeConfig->getValue('section/'.$a.'/ms')] = $this->scopeConfig
                                     ->getValue('section/'.$a.'/ms');
                             }
