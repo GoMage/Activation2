@@ -25,11 +25,32 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class B extends Action
 {
+    /**
+     * @var JsonFactory
+     */
     private $resultJsonFactory;
+    /**
+     * @var CurlFix
+     */
     private $curl;
+    /**
+     * @var Data
+     */
     private $helperData;
+    /**
+     * @var ScopeConfigInterface
+     */
     private $scopeConfig;
 
+    /**
+     * B constructor.
+     * @param Action\Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param ProcessorA $processorA
+     * @param CurlFix $curl
+     * @param Data $helperData
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         Action\Context $context,
         JsonFactory $resultJsonFactory,
@@ -46,6 +67,9 @@ class B extends Action
         parent::__construct($context);
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Json|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         $result = $this->resultJsonFactory->create();

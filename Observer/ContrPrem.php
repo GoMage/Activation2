@@ -162,7 +162,8 @@ class ContrPrem implements ObserverInterface
                 $hours > 24 ) {
                 $this->processors->process3($this->helperData->getCurl());
                 if (!$this->helperData->getCon()->getValue('gomage_da/da/da')) {
-                    $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
+                    $this->helperData->getResource()->saveConfig('gomage_da/da/da', $this->dateTime
+                        ->gmtDate(), 'default', 0);
                     $this->reinitableConfig->reinit();
                 }
             }

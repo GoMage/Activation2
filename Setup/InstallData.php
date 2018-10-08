@@ -25,8 +25,7 @@ class InstallData implements InstallDataInterface
     private $random;
     public function __construct(
         \Magento\Framework\Math\Random $random
-    )
-    {
+    ) {
         $this->random = $random;
     }
 

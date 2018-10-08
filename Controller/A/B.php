@@ -41,7 +41,7 @@ class B extends \Magento\Framework\App\Action\Action
      */
     private $resultJsonFactory;
     /**
-     * @var Curl
+     * @var CurlFix
      */
     private $curl;
     /**
@@ -51,13 +51,12 @@ class B extends \Magento\Framework\App\Action\Action
 
     /**
      * B constructor.
-     *
-     * @param Context                                          $context
-     * @param Data                                             $helperData
-     * @param ScopeConfigInterface                             $scopeConfig
+     * @param Context $context
+     * @param Data $helperData
+     * @param ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \GoMage\Core\Model\Processors\ProcessorAct       $act
-     * @param Curl                                             $curl
+     * @param \GoMage\Core\Model\Processors\ProcessorAct $act
+     * @param CurlFix $curl
      */
     public function __construct(
         Context $context,

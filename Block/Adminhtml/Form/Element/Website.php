@@ -45,7 +45,6 @@ class Website extends \Magento\Config\Block\System\Config\Form\Field
         $this->helper = $helper;
     }
 
-
     /**
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string

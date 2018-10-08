@@ -88,7 +88,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'
     ];
 
-
     /**
      * Data constructor.
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory
@@ -207,7 +206,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $partHtml = '';
         if ($param) {
             foreach ($param as $key => $item) {
-                if(!$this->getVersion($item)) {
+                if (!$this->getVersion($item)) {
                     continue;
                 }
                 $e = $this->scopeConfig->getValue('section/' . $item . '/e');
@@ -497,7 +496,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $nameS = '';
             foreach ($param as $key => $item) {
-                if(!$this->getVersion($item)) {
+                if (!$this->getVersion($item)) {
                     continue;
                 }
                 $nameS .= "'$item',";

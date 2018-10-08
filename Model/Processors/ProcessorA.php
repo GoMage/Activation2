@@ -151,7 +151,7 @@ class ProcessorA
                     if ($params['ns']) {
                         foreach ($this->getNamesWithoutVersion() as $a) {
                             $params['a'][$a] = $this->scopeConfig->getValue('section/'.$a.'/a');
-                            if($this->scopeConfig->getValue('section/'.$a.'/ms')){
+                            if ($this->scopeConfig->getValue('section/'.$a.'/ms')) {
                                 $params['ms'][$this->scopeConfig->getValue('section/'.$a.'/ms')] = $this->scopeConfig
                                     ->getValue('section/'.$a.'/ms');
                             }
@@ -162,7 +162,7 @@ class ProcessorA
             $params = $this->jsonHelper->jsonEncode($params);
             $curl->post(
                 $this->scopeConfig->getValue('gomage_core_url/url_core') . self::BASE_URL .
-                '/act/add?XDEBUG_SESSION_START=PHPSTORM',
+                '/act/add',
                 $params
             );
             $b = $this->jsonHelper->jsonDecode($curl->getBody());
@@ -263,7 +263,7 @@ class ProcessorA
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if ( 0 === $nn && $name != 'GoMage_Core') {
+            if (0 === $nn && $name != 'GoMage_Core') {
                 $n[$name] = $name . '_' . $this->getVersion($name);
             }
         }
@@ -279,7 +279,7 @@ class ProcessorA
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if ( 0 === $nn && $name != 'GoMage_Core') {
+            if (0 === $nn && $name != 'GoMage_Core') {
                 $n[$name] = $name;
             }
         }

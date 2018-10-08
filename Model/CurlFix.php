@@ -54,8 +54,6 @@ class CurlFix extends \Magento\Framework\HTTP\Client\Curl
         if ($this->_port != 80) {
             $this->curlOption(CURLOPT_PORT, $this->_port);
         }
-
-        //$this->curlOption(CURLOPT_HEADER, 1);
         $this->curlOption(CURLOPT_RETURNTRANSFER, 1);
         $this->curlOption(CURLOPT_HEADERFUNCTION, [$this, 'parseHeaders']);
 
