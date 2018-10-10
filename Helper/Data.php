@@ -773,6 +773,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ) || ($this->isFrComp($name, $matches) && $this->isD($this->inf[$name]['ds']));
     }
 
+    public function isCo() {
+        if($this->getVersion('GoMage_Core')) {
+            return true;
+        }
+        return false;
+    }
     /**
      * @param $ds
      * @return bool

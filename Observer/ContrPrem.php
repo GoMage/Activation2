@@ -104,6 +104,14 @@ class ContrPrem implements ObserverInterface
             strpos(get_class($action), 'GoMage\Core') === 0) {
             return;
         }
+        $moduleName1 = $action->getRequest()->getModuleName();
+        $moduleName = $action->getRequest()->getRouteName();
+        $mC = explode('_', $moduleName);
+        if (isset($mC[0]) && isset($mC[1])) {
+            $mC[0] = ucfirst($mC[0]);
+            $mC[1] = ucfirst($mC[1]);
+            $mC = implode('_', $mC);
+        }
         $controller = $action->getRequest()->getControllerName();
         if ($controller == 'system_config'
             && $action->getRequest()->getParam('section')
@@ -124,7 +132,8 @@ class ContrPrem implements ObserverInterface
             && (strpos(get_class($action), 'GoMage') === 0
                 || (            $controller == 'system_config'
                     && $action->getRequest()->getParam('section')
-                    && strpos($action->getRequest()->getParam('section'), 'gomage') === 0                        ))
+                    && strpos($action->getRequest()->getParam('section'), 'gomage') === 0 ))
+            || (strpos($moduleName, 'gomage') === 0 && !$this->helperData->isA($mC))
         ) {
             if ($this->helperData->getAr()==='adminhtml') {
                 if ($this->helperData->getError($resource) !== '0' && $this->helperData->getError($resource)) {
@@ -141,6 +150,7 @@ class ContrPrem implements ObserverInterface
                     $this->messageManager->addError($errorMsg);
                 }
             }
+
             $action->getRequest()->initForward();
             $action->getRequest()->setActionName('noroute');
             $action->getRequest()->setDispatched(false);
