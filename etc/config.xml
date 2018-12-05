@@ -20,7 +20,7 @@
             <a>ProcessorA</a>
         </gomage_processor>
         <gomage_core_url>
-            <url_core>https://dev.gomage.com</url_core>
+            <url_core>https://www.gomage.com</url_core>
         </gomage_core_url>
     </default>
 </config>
