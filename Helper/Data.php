@@ -81,6 +81,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $state;
 
     private $backendUrl;
+
+    /**
+     * @var \GoMage\Core\Model\Processors\ProcessorR
+     */
+    private $processorR;
+
     /**
      * @var array
      */
@@ -104,6 +110,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Encryption\Encryptor $encryptor
      * @param \Magento\Framework\View\Helper\Js $jsHelper
      * @param \Magento\Backend\Model\UrlInterface $backendUrl
+     * @param \GoMage\Core\Model\Processors\ProcessorR $processorR
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory,
@@ -119,7 +126,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \GoMage\Core\Model\CurlFix $curl,
         \Magento\Framework\Encryption\Encryptor $encryptor,
         \Magento\Framework\View\Helper\Js $jsHelper,
-        \Magento\Backend\Model\UrlInterface $backendUrl
+        \Magento\Backend\Model\UrlInterface $backendUrl,
+        \GoMage\Core\Model\Processors\ProcessorR $processorR
     ) {
         parent::__construct($context);
         $this->state = $state;
@@ -134,7 +142,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->curl = $curl;
         $this->encryptor = $encryptor;
         $this->jsHelper = $jsHelper;
+        $this->jsHelper = $jsHelper;
         $this->fullModuleList = $fullModuleList;
+        $this->processorR = $processorR;
     }
 
     /**
@@ -178,8 +188,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (0 === $nn && $name != 'GoMage_Core') {
-                $n[] = $name;
+            if (0 === $nn) {
+                if ($this->processorR->isD($name)) {
+                    $n[] = $name;
+                }
             }
         }
         return $n;

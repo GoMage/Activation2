@@ -92,6 +92,11 @@ class ProcessorA
     private $dateTime;
 
     /**
+     * @var ProcessorR
+     */
+    private $processorR;
+
+    /**
      * ProcessorA constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
@@ -101,6 +106,7 @@ class ProcessorA
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param ProcessorR $processorR
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -110,7 +116,8 @@ class ProcessorA
         \Magento\Framework\Module\ModuleListInterface $fullModuleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \GoMage\Core\Model\Processors\ProcessorR $processorR
     ) {
         $this->dateTime = $dateTime;
         $this->jsonHelper = $jsonHelper;
@@ -120,6 +127,7 @@ class ProcessorA
         $this->config = $config;
         $this->fullModuleList = $fullModuleList;
         $this->storeManager = $storeManager;
+        $this->processorR = $processorR;
     }
 
     /**
@@ -214,6 +222,7 @@ class ProcessorA
                         $result = $result->setData(['success' => 1]);
                     }
                 }
+
                 if ($this->getNamesWithoutVersion()) {
                     if ($names) {
                         $resultN = array_diff($this->getNamesWithoutVersion(), $names);
@@ -263,8 +272,10 @@ class ProcessorA
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (0 === $nn && $name != 'GoMage_Core') {
-                $n[$name] = $name . '_' . $this->getVersion($name);
+            if (0 === $nn) {
+                if ($this->processorR->isD($name)) {
+                    $n[$name] = $name . '_' . $this->getVersion($name);
+                }
             }
         }
         return $n;
@@ -279,8 +290,10 @@ class ProcessorA
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (0 === $nn && $name != 'GoMage_Core') {
-                $n[$name] = $name;
+            if (0 === $nn) {
+                if ($this->processorR->isD($name)) {
+                    $n[$name] = $name;
+                }
             }
         }
         return $n;

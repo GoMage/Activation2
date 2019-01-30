@@ -33,6 +33,7 @@ class ProcessorAct
     private $jsonHelper;
     private $random;
     private $dateTime;
+    private $processorR;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -43,7 +44,8 @@ class ProcessorAct
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Math\Random $random,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \GoMage\Core\Model\Processors\ProcessorR $processorR
     ) {
         $this->dateTime = $dateTime;
         $this->jsonHelper = $jsonHelper;
@@ -54,6 +56,7 @@ class ProcessorAct
         $this->fullModuleList = $fullModuleList;
         $this->storeManager = $storeManager;
         $this->random = $random;
+        $this->processorR = $processorR;
     }
 
     public function process($curl, $url)
@@ -193,8 +196,10 @@ class ProcessorAct
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (0 === $nn && $name != 'GoMage_Core') {
-                $n[$name] = $name.'_'.$this->getVersion($name);
+            if (0 === $nn) {
+                if ($this->processorR->isD($name)) {
+                    $n[$name] = $name . '_' . $this->getVersion($name);
+                }
             }
         }
         return $n;
@@ -206,8 +211,10 @@ class ProcessorAct
         $names = $this->fullModuleList->getNames();
         foreach ($names as $name) {
             $nn = strpos($name, 'GoMage');
-            if (($nn || 0 === $nn) && $name != 'GoMage_Core') {
-                $n[$name] = $name;
+            if (0 === $nn) {
+                if ($this->processorR->isD($name)) {
+                    $n[$name] = $name;
+                }
             }
         }
         return $n;
