@@ -113,7 +113,7 @@ class ProcessorR
      * @param $name
      * @return mixed
      */
-    private function reedC($name, $s = self::M_XML)
+    private function readC($name, $s = self::M_XML)
     {
         $filePath = $this->reader->getModuleDir('etc', $name)
             . $s;
@@ -126,7 +126,7 @@ class ProcessorR
      */
     private function getMC($name)
     {
-        return $this->reedC($name)['module']['_value'];
+        return $this->readC($name)['module']['_value'];
     }
 
     /**
@@ -145,7 +145,7 @@ class ProcessorR
     private function getPermMS($name)
     {
         $perm_s = [];
-        $s = $this->reedC($name, self::S_XML)['system']['section'];
+        $s = $this->readC($name, self::S_XML)['system']['section'];
         if (isset($s['_attribute'])) {
             $perm_s[$s['_attribute']['id']] = $s['_attribute']['id'];
         } else {
