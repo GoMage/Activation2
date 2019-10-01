@@ -20,4 +20,7 @@
     <event name="admin_system_config_changed_section_gomage_core">
         <observer name="gomage_core_config_change" instance="GoMage\Core\Observer\ConfigChangeObserver"/>
     </event>
+    <event name="controller_action_predispatch">
+        <observer name="gomage_core_notification" instance="GoMage\Core\Observer\NotificationObserver"/>
+    </event>
 </config>

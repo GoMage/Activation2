@@ -91,7 +91,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var array
      */
     private $b = [
-        'groups' => 'api', 'fields' => 'fields', 'value' =>'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'
+        'groups' => 'api', 'fields' => 'fields', 'value' => 'value', 'section' => 'gomage_core', 'group_s' => 'gomage_s'
     ];
 
     /**
@@ -127,8 +127,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Encryption\Encryptor $encryptor,
         \Magento\Framework\View\Helper\Js $jsHelper,
         \Magento\Backend\Model\UrlInterface $backendUrl,
-        \GoMage\Core\Model\Processors\ProcessorR $processorR
-    ) {
+        \GoMage\Core\Model\Processors\ProcessorR $processorR,
+        \Magento\Framework\App\Cache\TypeListInterface $typeList
+    )
+    {
         parent::__construct($context);
         $this->state = $state;
         $this->backendUrl = $backendUrl;
@@ -145,6 +147,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->jsHelper = $jsHelper;
         $this->fullModuleList = $fullModuleList;
         $this->processorR = $processorR;
+        $this->typeList = $typeList;
     }
 
     /**
@@ -158,7 +161,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $param = [];
         }
         foreach ($param as $key => $item) {
-            $w[$item] = $this->scopeConfig->getValue($this->b['section'].'/'.$this->b['section'].'/'.$item);
+            $w[$item] = $this->scopeConfig->getValue($this->b['section'] . '/' . $this->b['section'] . '/' . $item);
         }
         return $w;
     }
@@ -174,7 +177,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $param = [];
         }
         foreach ($param as $key => $item) {
-            $s[$item] = $this->scopeConfig->getValue($this->b['section'].'/'.$this->b['group_s'].'/'.$item);
+            $s[$item] = $this->scopeConfig->getValue($this->b['section'] . '/' . $this->b['group_s'] . '/' . $item);
         }
         return $s;
     }
@@ -225,7 +228,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 switch ($e) {
                     case 1:
-                        $htmlHeader= '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' .
                             __('The number of purchased domains is lower than the number of selected domains')
                             . '</div>';
@@ -235,15 +238,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
                         float:left; margin-right: 3%"></div>'
-                            .'<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
+                            . '<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case '0':
                         $partHtmlHeader = '<div  class="accordion error-header-' . $item . '" style="width: 100%; 
                         color: green; text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">
                         <span class="error-header-span-' . $item . '">' . __('Module is Activated') .
-                            '<div style="color:green;">' . __('Available domains') .': '.
+                            '<div style="color:green;">' . __('Available domains') . ': ' .
                             '</span><span class="' . $item . '"> %%counter%%</span></div></div>';
                         $partHtml .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
                         cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
@@ -251,9 +254,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
                         float:left; margin-right: 3%"></div>'
-                            .'<span class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                            . '<span class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
                               margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                              border-top: 0; float:left; display:none; margin-right: 3%"></span></div>'.$partHtmlHeader;
+                              border-top: 0; float:left; display:none; margin-right: 3%"></span></div>' . $partHtmlHeader;
                         break;
                     case 2:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
@@ -267,7 +270,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 3:
                         $htmlHeader = '<div class="error-header-' . $item . '" class="error-header-' . $item . '" 
@@ -283,7 +286,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         border-top-color: #696969; border-bottom: 0; float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 4:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
@@ -297,13 +300,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 5:
-                        $mess =  __('The' .$item.' version'.$this->getVersion($item).' is not available within your'
-                            .'license upgrade period. Your license is blocked. Please contact support@gomage.com');
+                        $mess = __('The' . $item . ' version' . $this->getVersion($item) . ' is not available within your'
+                            . 'license upgrade period. Your license is blocked. Please contact support@gomage.com');
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
-                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' .$mess.
+                        text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' . $mess .
                             '</div>';
                         $html .=
                             '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
@@ -314,7 +317,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 6:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
@@ -329,14 +332,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              <div class="expander-gomage-top-root-' . $item . '" 
                              style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; 
                              border-bottom-color: #696969; border-top: 0; float:left; display:none;"></div></div>'
-                            .$htmlHeader;
+                            . $htmlHeader;
 
                         break;
                     case 7:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">'
                             . __(
-                                'The number of purchased domains is lower than the number of selected domains.'.
+                                'The number of purchased domains is lower than the number of selected domains.' .
                                 'Your license is blocked. Please contact support@gomage.com'
                             ) . '</div>';
                         $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
@@ -347,7 +350,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
 
                     case 8:
@@ -362,7 +365,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     default:
                         $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
@@ -376,7 +379,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                          float:left "></div>
                              <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
-                             border-top: 0; float:left; display:none;"></div></div>'.$htmlHeader;
+                             border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                 }
                 if ($e) {
                     $html .= '<div id="content-' . $item . '" class="content" style="display: none;">';
@@ -455,7 +458,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             );
                             $element->setValue($store->getId());
                             $storeHtml .= '<div data-namespace="'
-                                .$item.'" class=" label-store field choice admin__field admin__field-option" 
+                                . $item . '" class=" label-store field choice admin__field admin__field-option" 
                                 style="margin-left: 10%">' . $element->getElementHtml() .
                                 ' <label for="' .
                                 $id . '_' . $store->getId() .
@@ -468,21 +471,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     if ($conditionW || $storeHtml !== '') {
                         $websiteHtml .= '<div class="field website-checkbox-' . $item .
                             ' choice admin__field admin__field-option"></span>' . $elementHtml .
-                            ' <label data-content-website="'.$item.'"  data-website-id="'.$website->getId().'" for="' .
+                            ' <label data-content-website="' . $item . '"  data-website-id="' . $website->getId() . '" for="' .
                             $id . '_' . $website->getId() .
                             '" class="admin__field-label website-div-top"><span>' .
                             $website->getName() .
                             '
-                            <div class="expander-gomage expander-gomage-'.$item.'-'.$website->getId()
-                            .'" style="width: 0;height: 0; margin-top: 5px; 
+                            <div class="expander-gomage expander-gomage-' . $item . '-' . $website->getId()
+                            . '" style="width: 0;height: 0; margin-top: 5px; 
                              border: 6px solid transparent; border-top-color: #adadad; border-bottom: 0; float: left; margin-right: 3% ;
                              ">
                              </div>
-                             <span class="expander-gomage-top expander-gomage-top-'.$item.'-'
-                            .$website->getId().'" style="width: 0;height: 0; margin-top: 5px; 
+                             <span class="expander-gomage-top expander-gomage-top-' . $item . '-'
+                            . $website->getId() . '" style="width: 0;height: 0; margin-top: 5px; 
                              border: 6px solid transparent; border-bottom-color: #adadad; border-top: 0; 
                              float:left; display:none; margin-right: 3%"></span></label>
-                             <div class="content content-key-'.$item.'-'.$website->getId().'" style="display: none" >';
+                             <div class="content content-key-' . $item . '-' . $website->getId() . '" style="display: none" >';
                     }
                     if ($storeHtml !== '') {
                         $websiteHtml .= $storeHtml;
@@ -707,8 +710,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                                         });
                                                      }
                                                 } else {
-                                                      $$(".error-header-"+el).first().innerHTML="'.
-                    __("Module is not Activated").'"
+                                                      $$(".error-header-"+el).first().innerHTML="' .
+                    __("Module is not Activated") . '"
                                                       $$(".error-header-"+el).first().style.color="red"  
                                                       $$(".error-header-"+el).each(function(e) {
                                                             if(!e.checked){
@@ -785,12 +788,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ) || ($this->isFrComp($name, $matches) && $this->isD($this->inf[$name]['ds']));
     }
 
-    public function isCo() {
-        if($this->getVersion('GoMage_Core')) {
+    public function isCo()
+    {
+        if ($this->getVersion('GoMage_Core')) {
             return true;
         }
         return false;
     }
+
     /**
      * @param $ds
      * @return bool
@@ -946,8 +951,58 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->curl;
     }
+
     public function getCon()
     {
         return $this->scopeConfig;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBU()
+    {
+        if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
+            return $this->scopeConfig->getValue('web/secure/base_url');
+        }
+        return $this->scopeConfig->getValue('web/unsecure/base_url');
+    }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isNotifyD()
+    {
+        return $this->notifyD();
+    }
+
+
+    /**
+     * @return bool
+     */
+    private function notifyD()
+    {
+        if ($d = $this->getCon()->getValue('gomage_notify/d/d')) {
+            if ($d == $this->dateTime->gmtDate('Y-m-d')) {
+                $this->setNotifyConD(date('Y-m-d', strtotime('+10 days')));
+                return true;
+            }
+        } else {
+            $this->setNotifyConD($this->dateTime
+                ->gmtDate('Y-m-d'));
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $value
+     */
+    private function setNotifyConD($value)
+    {
+        $this->getResource()->saveConfig('gomage_notify/d/d', $value, 'default', 0);
+        $this->typeList->cleanType('config');
     }
 }
