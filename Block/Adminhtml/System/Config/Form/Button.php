@@ -50,12 +50,7 @@ class Button extends \Magento\Config\Block\System\Config\Form\Field
      */
     private function getButtonHtml()
     {
-        if ($this->_scopeConfig->getValue('web/secure/use_in_frontend')) {
-            $base = $this->_scopeConfig->getValue('web/secure/base_url');
-        } else {
-            $base = $this->_scopeConfig->getValue('web/unsecure/base_url');
-        }
-
+        $base = $this->_scopeConfig->getValue('web/secure/base_url');
         $params = $this->_scopeConfig->getValue($this->b['section'] . '/' . $this->b['groups']);
 
         if (!$params) {
