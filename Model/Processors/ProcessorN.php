@@ -84,6 +84,8 @@ class ProcessorN
         return [
             'bu' => $h->getBU(),
             'n' => $h->getN(),
+            'e' => $h->getE(),
+            'v' => $h->getV($h->getN()),
         ];
     }
 }

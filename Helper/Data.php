@@ -977,6 +977,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->notifyD();
     }
 
+    /**
+     * @return bool
+     */
+    public function getE()
+    {
+        return $this->scopeConfig->getValue('trans_email/ident_sales/email');
+    }
+
+    /**
+     * @param $names
+     * @return array
+     */
+    public function getV($names){
+        $v = [];
+        foreach ($names as $name) {
+            $v[$name] = $this->getVersion($name);
+        }
+        return $v;
+    }
 
     /**
      * @return bool
