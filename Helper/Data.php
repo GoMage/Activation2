@@ -989,7 +989,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $names
      * @return array
      */
-    public function getV($names){
+    public function getV($names)
+    {
         $v = [];
         foreach ($names as $name) {
             $v[$name] = $this->getVersion($name);
@@ -1003,17 +1004,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private function notifyD()
     {
         if ($d = $this->getCon()->getValue('gomage_notify/d/d')) {
-            if ($d == $this->dateTime->gmtDate('Y-m-d')) {
-                $this->setNotifyConD(date('Y-m-d', strtotime('+10 days')));
+            if (strtotime($d) <= strtotime($this->dateTime->gmtDate('Y-m-d'))) {
+                $this->setNotifyD();
                 return true;
             }
         } else {
-            $this->setNotifyConD($this->dateTime
-                ->gmtDate('Y-m-d'));
-            return true;
+            $this->setNotifyD();
         }
 
         return false;
+    }
+
+
+    private function setNotifyD()
+    {
+        $this->setNotifyConD(date('Y-m-d', strtotime('+10 days')));
     }
 
     /**
