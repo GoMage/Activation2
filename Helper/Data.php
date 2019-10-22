@@ -205,6 +205,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
+    /**
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function getC(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         $html = '';
@@ -382,9 +387,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                 }
                 if ($e) {
-                    $html .= '<div id="content-' . $item . '" class="content" style="display: none;">';
+                    $html .= '<div id="content-' . $item . '" class="content" >';
                 } else {
-                    $partHtml .= '<div id="content-' . $item . '" class="content" style="display: none;">';
+                    $partHtml .= '<div id="content-' . $item . '" class="content">';
                 }
                 $c = $this->scopeConfig->getValue('section/' . $item . '/c');
                 $counter[$item] = $this->scopeConfig->getValue('section/' . $item . '/c') ?: 0;
@@ -435,38 +440,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         }
                         $secure = $store->getConfig('web/secure/use_in_frontend');
                         if ($secure) {
-                            if (in_array($store->getConfig('web/secure/base_url'), $allDomains)) {
-                                continue;
-                            }
                             $allDomains[] = $store->getConfig('web/secure/base_url');
-                            $condition = $base != $store->getConfig('web/secure/base_url');
                         } else {
-                            if (in_array($store->getConfig('web/unsecure/base_url'), $allDomains)) {
-                                continue;
-                            }
                             $allDomains[] = $store->getConfig('web/unsecure/base_url');
-                            $condition = $base != $store->getConfig('web/unsecure/base_url');
                         };
                         if (in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])) {
                             --$counter[$item];
                         }
-                        if ($condition) {
-                            $element->setName($namePrefix . '[]');
-                            $element->setId($id . '_store_' . $store->getId());
-                            $element->setChecked(
-                                in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])
-                            );
-                            $element->setValue($store->getId());
-                            $storeHtml .= '<div data-namespace="'
-                                . $item . '" class=" label-store field choice admin__field admin__field-option" 
+                        $element->setName($namePrefix . '[]');
+                        $element->setId($id . '_store_' . $store->getId());
+                        $element->setChecked(
+                            in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])
+                        );
+                        $element->setValue($store->getId());
+                        $storeHtml .= '<div data-namespace="'
+                            . $item . '" class=" label-store field choice admin__field admin__field-option" 
                                 style="margin-left: 10%">' . $element->getElementHtml() .
-                                ' <label for="' .
-                                $id . '_' . $store->getId() .
-                                '" class="admin__field-label labels-elements"><span>' .
-                                $this->storeManager->getStore($store->getId())->getName() .
-                                '</span></label>';
-                            $storeHtml .= '</div>' . "\n";
-                        }
+                            ' <label for="' .
+                            $id . '_' . $store->getId() .
+                            '" class="admin__field-label labels-elements"><span>' .
+                            $this->storeManager->getStore($store->getId())->getName() .
+                            '</span></label>';
+                        $storeHtml .= '</div>' . "\n";
+
                     }
                     if ($conditionW || $storeHtml !== '') {
                         $websiteHtml .= '<div class="field website-checkbox-' . $item .
@@ -989,8 +985,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $names
      * @return array
      */
-    public function getV($names)
-    {
+    public function getV($names){
         $v = [];
         foreach ($names as $name) {
             $v[$name] = $this->getVersion($name);
@@ -1004,21 +999,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private function notifyD()
     {
         if ($d = $this->getCon()->getValue('gomage_notify/d/d')) {
-            if (strtotime($d) <= strtotime($this->dateTime->gmtDate('Y-m-d'))) {
-                $this->setNotifyD();
+            if ($d == $this->dateTime->gmtDate('Y-m-d')) {
+                $this->setNotifyConD(date('Y-m-d', strtotime('+10 days')));
                 return true;
             }
         } else {
-            $this->setNotifyD();
+            $this->setNotifyConD($this->dateTime
+                ->gmtDate('Y-m-d'));
+            return true;
         }
 
         return false;
-    }
-
-
-    private function setNotifyD()
-    {
-        $this->setNotifyConD(date('Y-m-d', strtotime('+10 days')));
     }
 
     /**

@@ -23,4 +23,7 @@
     <event name="controller_action_predispatch">
         <observer name="gomage_core_notification" instance="GoMage\Core\Observer\NotificationObserver"/>
     </event>
+    <event name="admin_system_config_save">
+        <observer name="gomage_core_admin_system_config_save" instance="GoMage\Core\Observer\CheckSaveOptionsObserver"/>
+    </event>
 </config>
