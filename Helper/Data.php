@@ -800,6 +800,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isD($ds)
     {
         $dms = $this->storeManager->getStore();
+        $section = $dms->getId();
         if ($dms) {
             $secure = $dms->getConfig('web/secure/use_in_frontend');
             if ($secure) {
@@ -809,9 +810,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
-            $base = $this->scopeConfig->getValue('web/secure/base_url');
+            $base = $this->scopeConfig->getValue('web/secure/base_url',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $section);
         } else {
-            $base = $this->scopeConfig->getValue('web/unsecure/base_url');
+            $base = $this->scopeConfig->getValue('web/unsecure/base_url',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $section);
         }
         $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d, '/'))));
         $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base, '/'))));
