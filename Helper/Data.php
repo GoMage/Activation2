@@ -860,11 +860,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function comWS($ds)
     {
+        $section = 0;
         if ($this->_request->getParam('website')) {
             $dms = $this->storeManager->getWebsite($this->_request->getParam('website'));
+            $section = $this->storeManager->getWebsite($this->_request->getParam('website'))->getDefaultStore()->getId();
         } elseif ($this->_request->getParam('store')) {
             $dms = $this->storeManager->getStore($this->_request->getParam('store'));
+            $section = $this->_request->getParam('store');
         }
+
         if ($dms) {
             $secure = $dms->getConfig('web/secure/base_url');
             if ($secure) {
@@ -873,14 +877,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $d = $dms->getConfig('web/unsecure/base_url');
             }
         }
+
         if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
             $base = $this->scopeConfig->getValue('web/secure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $this->_request->getParam('store'));
+                $section);
         } else {
             $base = $this->scopeConfig->getValue('web/unsecure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $this->_request->getParam('store'));
+                $section);
         }
         $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d, '/'))));
         $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base, '/'))));
