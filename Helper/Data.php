@@ -874,9 +874,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
-            $base = $this->scopeConfig->getValue('web/secure/base_url');
+            $base = $this->scopeConfig->getValue('web/secure/base_url',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $this->_request->getParam('store'));
         } else {
-            $base = $this->scopeConfig->getValue('web/unsecure/base_url');
+            $base = $this->scopeConfig->getValue('web/unsecure/base_url',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $this->_request->getParam('store'));
         }
         $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d, '/'))));
         $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base, '/'))));
