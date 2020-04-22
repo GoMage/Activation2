@@ -16,6 +16,8 @@
 
 namespace GoMage\Core\Helper;
 
+use Magento\Framework\Exception\FileSystemException;
+
 /**
  * Class Data
  *
@@ -47,10 +49,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Framework\Module\ModuleListInterface
      */
     private $moduleList;
-    /**
-     * @var \Magento\Framework\Json\Helper\Data
-     */
-    private $jsonHelper;
     /**
      * @var \Magento\Framework\Encryption\Encryptor
      */
@@ -95,6 +93,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     ];
 
     /**
+     * @var \Magento\Framework\Component\ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
+
+    /**
+     * @var \Magento\Framework\Filesystem\Directory\ReadFactory
+     */
+    private $readFactory;
+
+    /**
+     * @var \Magento\Framework\Serialize\SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * Data constructor.
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory
      * @param \Magento\Framework\Module\FullModuleList $fullModuleList
@@ -105,12 +118,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\System\Store $systemStore
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \GoMage\Core\Model\CurlFix $curl
      * @param \Magento\Framework\Encryption\Encryptor $encryptor
      * @param \Magento\Framework\View\Helper\Js $jsHelper
      * @param \Magento\Backend\Model\UrlInterface $backendUrl
      * @param \GoMage\Core\Model\Processors\ProcessorR $processorR
+     * @param \Magento\Framework\App\Cache\TypeListInterface $typeList
+     * @param \Magento\Framework\Component\ComponentRegistrarInterface $componentRegistrar
+     * @param \Magento\Framework\Filesystem\Directory\ReadFactory $readFactory
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      */
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollectionFactory,
@@ -122,15 +138,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\System\Store $systemStore,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \GoMage\Core\Model\CurlFix $curl,
         \Magento\Framework\Encryption\Encryptor $encryptor,
         \Magento\Framework\View\Helper\Js $jsHelper,
         \Magento\Backend\Model\UrlInterface $backendUrl,
         \GoMage\Core\Model\Processors\ProcessorR $processorR,
-        \Magento\Framework\App\Cache\TypeListInterface $typeList
-    )
-    {
+        \Magento\Framework\App\Cache\TypeListInterface $typeList,
+        \Magento\Framework\Component\ComponentRegistrarInterface $componentRegistrar,
+        \Magento\Framework\Filesystem\Directory\ReadFactory $readFactory,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
+    ) {
         parent::__construct($context);
         $this->state = $state;
         $this->backendUrl = $backendUrl;
@@ -140,7 +157,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->systemStore = $systemStore;
         $this->dateTime = $dateTime;
         $this->moduleList = $moduleList;
-        $this->jsonHelper = $jsonHelper;
         $this->curl = $curl;
         $this->encryptor = $encryptor;
         $this->jsHelper = $jsHelper;
@@ -148,6 +164,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->fullModuleList = $fullModuleList;
         $this->processorR = $processorR;
         $this->typeList = $typeList;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->readFactory = $readFactory;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -218,8 +237,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $websites = $this->getAvailableWebsites($param);
         $stores = $this->getAvailableStores($param);
 
-        $html .= '<div class="div-refresh-domain" style="width: 100%; height: 20px; text-align: left;  font-size: 10px; 
-                  margin-bottom: 35px;"><button class="refresh-domain" 
+        $html .= '<div class="div-refresh-domain" style="width: 100%; height: 20px; text-align: left;  font-size: 10px;
+                  margin-bottom: 35px;"><button class="refresh-domain"
                   onclick="event.preventDefault();">' . __('Show available domains')
             . '</button></div>';
         $counter = [];
@@ -233,109 +252,109 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 switch ($e) {
                     case 1:
-                        $htmlHeader = '<div  class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div  class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' .
                             __('The number of purchased domains is lower than the number of selected domains')
                             . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left; margin-right: 3%"></div>'
-                            . '<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                            . '<div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case '0':
-                        $partHtmlHeader = '<div  class="accordion error-header-' . $item . '" style="width: 100%; 
+                        $partHtmlHeader = '<div  class="accordion error-header-' . $item . '" style="width: 100%;
                         color: green; text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">
                         <span class="error-header-span-' . $item . '">' . __('Module is Activated') .
                             '<div style="color:green;">' . __('Available domains') . ': ' .
                             '</span><span class="' . $item . '"> %%counter%%</span></div></div>';
-                        $partHtml .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $partHtml .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left; margin-right: 3%"></div>'
                             . '<span class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
-                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                              margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                               border-top: 0; float:left; display:none; margin-right: 3%"></span></div>' . $partHtmlHeader;
                         break;
                     case 2:
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">'
                             . __('Incorrect license data. Your license is blocked. Please contact support@gomage.com')
                             . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
-                        margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) . ' 
-                        <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; margin-top: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
+                        margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) . '
+                        <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; margin-top: 5px;
                         border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 3:
-                        $htmlHeader = '<div class="error-header-' . $item . '" class="error-header-' . $item . '" 
-                        style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 5px; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" class="error-header-' . $item . '"
+                        style="width: 100%; color: red; text-align: left;  font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' .
                             __('Incorrect license key. Your license is blocked. Please contact support@gomage.com')
                             . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item .
-                            '" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; 
+                            '" style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent;
                         border-top-color: #696969; border-bottom: 0; float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 4:
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' .
                             __('Incorrect license data. Please contact support@gomage.com.') . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 5:
                         $mess = __('The' . $item . ' version' . $this->getVersion($item) . ' is not available within your'
                             . 'license upgrade period. Your license is blocked. Please contact support@gomage.com');
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' . $mess .
                             '</div>';
                         $html .=
-                            '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                            cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                            '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                            cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                             margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
                             margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                             float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     case 6:
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">' .
                             __('Your demo license expired. Please contact support@gomage.com') . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" 
-                             style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent; 
+                             <div class="expander-gomage-top-root-' . $item . '"
+                             style="width: 0;height: 0; margin-top: 5px; border: 8px solid transparent;
                              border-bottom-color: #696969; border-top: 0; float:left; display:none;"></div></div>'
                             . $htmlHeader;
 
@@ -347,43 +366,43 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                 'The number of purchased domains is lower than the number of selected domains.' .
                                 'Your license is blocked. Please contact support@gomage.com'
                             ) . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
 
                     case 8:
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">'
                             . __('Exceeds the number of available domains for the license demo') . '</div>';
-                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '" class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
-                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0; 
-                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                            ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
+                        margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                         float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                         break;
                     default:
-                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red; 
+                        $htmlHeader = '<div class="error-header-' . $item . '" style="width: 100%; color: red;
                         text-align: left;  font-size: 1.2em; margin-bottom: 5px; margin-top: 10px;  ">'
                             . __('Module is not Activated') . '</div>';
-                        $html .= '<div data-element="' . $item . '"class="module-name-header" style="width: 100%; 
-                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px; 
+                        $html .= '<div data-element="' . $item . '"class="module-name-header" style="width: 100%;
+                        cursor:pointer; text-align: left; font-weight: bold; font-size: 1.2em; margin-bottom: 5px;
                         margin-top: 10px;  ">' . $item . ' v' . $this->getVersion($item) .
                             ' <div class="expander-gomage-root-' . $item . '" style="width: 0;height: 0;
-                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0; 
+                         margin-top: 5px; border: 8px solid transparent; border-top-color: #696969; border-bottom: 0;
                          float:left "></div>
-                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0; 
-                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969; 
+                             <div class="expander-gomage-top-root-' . $item . '" style="width: 0;height: 0;
+                             margin-top: 5px; border: 8px solid transparent; border-bottom-color: #696969;
                              border-top: 0; float:left; display:none;"></div></div>' . $htmlHeader;
                 }
                 if ($e) {
@@ -428,7 +447,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         }
                         $conditionW = $base != $website->getConfig('web/unsecure/base_url');
                         $allDomains[] = $website->getConfig('web/unsecure/base_url');
-                    };
+                    }
                     if (in_array($website->getId(), $websites[$item] ? explode(',', $websites[$item]) : [])) {
                         --$counter[$item];
                     }
@@ -443,7 +462,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $allDomains[] = $store->getConfig('web/secure/base_url');
                         } else {
                             $allDomains[] = $store->getConfig('web/unsecure/base_url');
-                        };
+                        }
                         if (in_array($store->getId(), isset($stores[$item]) ? explode(',', $stores[$item]) : [])) {
                             --$counter[$item];
                         }
@@ -454,7 +473,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         );
                         $element->setValue($store->getId());
                         $storeHtml .= '<div data-namespace="'
-                            . $item . '" class=" label-store field choice admin__field admin__field-option" 
+                            . $item . '" class=" label-store field choice admin__field admin__field-option"
                                 style="margin-left: 10%">' . $element->getElementHtml() .
                             ' <label for="' .
                             $id . '_' . $store->getId() .
@@ -462,7 +481,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $this->storeManager->getStore($store->getId())->getName() .
                             '</span></label>';
                         $storeHtml .= '</div>' . "\n";
-
                     }
                     if ($conditionW || $storeHtml !== '') {
                         $websiteHtml .= '<div class="field website-checkbox-' . $item .
@@ -473,13 +491,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                             $website->getName() .
                             '
                             <div class="expander-gomage expander-gomage-' . $item . '-' . $website->getId()
-                            . '" style="width: 0;height: 0; margin-top: 5px; 
+                            . '" style="width: 0;height: 0; margin-top: 5px;
                              border: 6px solid transparent; border-top-color: #adadad; border-bottom: 0; float: left; margin-right: 3% ;
                              ">
                              </div>
                              <span class="expander-gomage-top expander-gomage-top-' . $item . '-'
-                            . $website->getId() . '" style="width: 0;height: 0; margin-top: 5px; 
-                             border: 6px solid transparent; border-bottom-color: #adadad; border-top: 0; 
+                            . $website->getId() . '" style="width: 0;height: 0; margin-top: 5px;
+                             border: 6px solid transparent; border-bottom-color: #adadad; border-top: 0;
                              float:left; display:none; margin-right: 3%"></span></label>
                              <div class="content content-key-' . $item . '-' . $website->getId() . '" style="display: none" >';
                     }
@@ -523,8 +541,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $namePrefix = 'groups[' . $this->b['group_s'] . '][' . $this->b['fields'] . '][' .
                     $item . '][' . $this->b['value'] . '][]';
                 $jsString .= '
-                             counter["' . $item . '"] = ' . $counter[$item] . '; 
-                             counterAll["' . $item . '"] = ' . $c . '; 
+                             counter["' . $item . '"] = ' . $counter[$item] . ';
+                             counterAll["' . $item . '"] = ' . $c . ';
                         if($$(".website-checkbox-' . $item . ' input[name=\'' .
                     $namePrefix . '\']:checked , .website-checkbox-' .
                     $item . ' input[name=\'' . $name . '\']:checked").length >= counterAll["' . $item . '"]){
@@ -560,7 +578,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         $$(".website-checkbox-' . $item . ' input[name=\'' . $namePrefix
                     . '\'], .website-checkbox-' . $item . ' input[name=\'' . $name . '\']").each(function(e){
                             if(!e.checked){
-                            
+
                                 e.disabled = "disabled";
                             }
                         });
@@ -589,7 +607,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                              var wId = el.readAttribute("data-website-id");
                              elem = $("content-" + stC);
                              var  elemKey = elem.select(\'.content-key-\'+stC+"-"+wId);
-                             
+
                               if( el.hasClassName(\'website-div-top\')) {
                                 elemKey.first().show();
                                 el.removeClassName(\'website-div-top\');
@@ -601,10 +619,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                  $$(\'.expander-gomage-\'+stC+"-"+wId).first().show();
                                  $$(\'.expander-gomage-top-\'+stC+"-"+wId).first().hide();
                              }
-                                 
+
                              });
-                             
-                           
+
+
                     });
                     $$(".label-store").each(function(el) {
                          el.on("click", function (event) {
@@ -639,7 +657,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     });
                     $$(".module-name-header").each(function(elem) {
                              elem.observe("click", function (event) {
-                             
+
                              event.stopPropagation();
                              var identity = elem.readAttribute("data-element");
                              if( elem.hasClassName(\'module-name-header\')) {
@@ -653,17 +671,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                  elem.select(\'.expander-gomage-root-\'+identity).first().show();
                                  elem.select(\'.expander-gomage-top-root-\'+identity).first().hide();
                              }
-                            
+
                              });
                     });
-                    
+
                     $$(".refresh-domain").first().observe("click", function (event) {
                       event.stopPropagation();
                         new Ajax.Request("' . $this->backendUrl->getUrl('gomage_activator/a/b') . '", {
                                   onSuccess: function(response) {
                                        var result = response.responseJSON.data;
                                             nameS.each(function(el) {
-                                                    
+
                                                 if (result.hasOwnProperty(el)) {
                                                      if(result[el]["error"]) {
                                                         $$(".website-checkbox-" + result[el]["name"]+
@@ -673,30 +691,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                                         });
                                                         counter[el]=0;
                                                         counterAll[el]=0;
-                                                        
-                                                        $$(".error-header-" + 
+
+                                                        $$(".error-header-" +
                                                         result[el]["name"]).first().innerHTML=result[el]["message"];
-                                                        $$(".error-header-" + 
+                                                        $$(".error-header-" +
                                                         result[el]["name"]).first().style.color="red";
                                                      } else {
-                                                          var diff =  result[el]["c"] - counterAll[el];  
+                                                          var diff =  result[el]["c"] - counterAll[el];
                                                           var res = counter[el] + diff;
                                                           counterAll[el] = counterAll[el] + diff;
                                                           counter[el] = counter[el] + diff;
                                                           var t = $$(".error-header-" + result[el]["name"]).first();
                                                          // $$("span." + el).first().innerHTML=counter[el];
-                                                          $$(".error-header-" + 
+                                                          $$(".error-header-" +
                                                           result[el]["name"]).first().style.color="green";
-                                                          $$(".error-header-" + 
+                                                          $$(".error-header-" +
                                                           result[el]["name"]).first().innerHTML=
                                                           result[el]["message"] +
                                                           "<div>' . __("Available domains") . '"
                                                           + ": <span class=\'"+ el +"\'> " + res + "</span></div>";
                                                           $$(".website-checkbox-" + result[el]["name"]
                                                           +" input").each(function(e) {
-                                                             if($$(".website-checkbox-" + 
+                                                             if($$(".website-checkbox-" +
                                                              result[el]["name"]
-                                                             +" input:checked").length >= counter[el]) {  
+                                                             +" input:checked").length >= counter[el]) {
                                                                 if(!e.checked){
                                                                     e.disabled = "disabled";
                                                                 }
@@ -708,7 +726,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                                 } else {
                                                       $$(".error-header-"+el).first().innerHTML="' .
                     __("Module is not Activated") . '"
-                                                      $$(".error-header-"+el).first().style.color="red"  
+                                                      $$(".error-header-"+el).first().style.color="red"
                                                       $$(".error-header-"+el).each(function(e) {
                                                             if(!e.checked){
                                                                     e.disabled = "disabled";
@@ -719,19 +737,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                                   }
                             });
                      });
-                    var counter = {}; 
-                    var counterAll = {}; 
+                    var counter = {};
+                    var counterAll = {};
                     var nameS = [' . $nameS . ']
                 ' . $jsString . '});});');
     }
 
     /**
-     * @param $name
-     * @return mixed
+     * @param $moduleName
+     * @return \Magento\Framework\Phrase|mixed
+     * @throws FileSystemException
      */
-    private function getVersion($name)
+    private function getVersion($moduleName)
     {
-        return $this->moduleList->getOne($name)['setup_version'];
+        $path = $this->componentRegistrar->getPath(
+            \Magento\Framework\Component\ComponentRegistrar::MODULE,
+            $moduleName
+        );
+        $directoryRead = $this->readFactory->create($path);
+        try {
+            $composerJsonData = $directoryRead->readFile('composer.json');
+        } catch (FileSystemException $e) {
+            throw $e;
+        }
+        $data = $this->serializer->unserialize($composerJsonData);
+
+        return !empty($data['version']) ? $data['version'] : __(' Module version is not specified in the composer.json file');
     }
 
     /**
@@ -810,13 +841,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
         if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
-            $base = $this->scopeConfig->getValue('web/secure/base_url',
+            $base = $this->scopeConfig->getValue(
+                'web/secure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $section);
+                $section
+            );
         } else {
-            $base = $this->scopeConfig->getValue('web/unsecure/base_url',
+            $base = $this->scopeConfig->getValue(
+                'web/unsecure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $section);
+                $section
+            );
         }
         $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d, '/'))));
         $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base, '/'))));
@@ -834,12 +869,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isUseWS($ds)
     {
-        return ((($this->_request->getParam('store')
+        return ((
+            ($this->_request->getParam('store')
                     ||
                     ($this->_request->getParam('website')))
                 && $this->comWS($ds)
-
-            )) || (!$this->_request->getParam('store') && !$this->_request->getParam('website'));
+        )) || (!$this->_request->getParam('store') && !$this->_request->getParam('website'));
     }
 
     /**
@@ -884,13 +919,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         if ($this->scopeConfig->getValue('web/secure/use_in_frontend')) {
-            $base = $this->scopeConfig->getValue('web/secure/base_url',
+            $base = $this->scopeConfig->getValue(
+                'web/secure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $section);
+                $section
+            );
         } else {
-            $base = $this->scopeConfig->getValue('web/unsecure/base_url',
+            $base = $this->scopeConfig->getValue(
+                'web/unsecure/base_url',
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $section);
+                $section
+            );
         }
         $d = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($d, '/'))));
         $base = preg_replace('/.*?\:\/\//', '', preg_replace('/www\./', '', strtolower(trim($base, '/'))));
@@ -999,7 +1038,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param $names
      * @return array
      */
-    public function getV($names){
+    public function getV($names)
+    {
         $v = [];
         foreach ($names as $name) {
             $v[$name] = $this->getVersion($name);
