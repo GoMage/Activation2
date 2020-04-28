@@ -16,6 +16,8 @@
 
 namespace GoMage\Core\Model\Processors;
 
+use Magento\Framework\Exception\FileSystemException;
+
 class ProcessorAct
 {
     const BASE_URL = '/api/rest';
@@ -35,6 +37,21 @@ class ProcessorAct
     private $dateTime;
     private $processorR;
 
+    /**
+     * @var \Magento\Framework\Component\ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
+
+    /**
+     * @var \Magento\Framework\Filesystem\Directory\ReadFactory
+     */
+    private $readFactory;
+
+    /**
+     * @var \Magento\Framework\Serialize\SerializerInterface
+     */
+    private $serializer;
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
@@ -45,7 +62,10 @@ class ProcessorAct
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Math\Random $random,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \GoMage\Core\Model\Processors\ProcessorR $processorR
+        \GoMage\Core\Model\Processors\ProcessorR $processorR,
+        \Magento\Framework\Component\ComponentRegistrarInterface $componentRegistrar,
+        \Magento\Framework\Filesystem\Directory\ReadFactory $readFactory,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
         $this->dateTime = $dateTime;
         $this->jsonHelper = $jsonHelper;
@@ -57,6 +77,9 @@ class ProcessorAct
         $this->storeManager = $storeManager;
         $this->random = $random;
         $this->processorR = $processorR;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->readFactory = $readFactory;
+        $this->serializer = $serializer;
     }
 
     public function process($curl, $url)
@@ -221,11 +244,25 @@ class ProcessorAct
     }
 
     /**
-     * @return string
+     * @param $moduleName
+     * @return \Magento\Framework\Phrase|mixed
+     * @throws FileSystemException
      */
-    private function getVersion($name)
+    private function getVersion($moduleName)
     {
-        return $this->fullModuleList->getOne($name)['setup_version'];
+        $path = $this->componentRegistrar->getPath(
+            \Magento\Framework\Component\ComponentRegistrar::MODULE,
+            $moduleName
+        );
+        $directoryRead = $this->readFactory->create($path);
+        try {
+            $composerJsonData = $directoryRead->readFile('composer.json');
+        } catch (FileSystemException $e) {
+            throw $e;
+        }
+        $data = $this->serializer->unserialize($composerJsonData);
+
+        return !empty($data['version']) ? $data['version'] : __(' Module version is not specified in the composer.json file');
     }
 
     private function _getDomainsAviable($b)

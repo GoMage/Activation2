@@ -16,6 +16,8 @@
 
 namespace GoMage\Core\Model\Processors;
 
+use Magento\Framework\Exception\FileSystemException;
+
 /**
  * Class ProcessorA
  * @package GoMage\Core\Model\Processors
@@ -97,6 +99,21 @@ class ProcessorA
     private $processorR;
 
     /**
+     * @var \Magento\Framework\Component\ComponentRegistrarInterface
+     */
+    private $componentRegistrar;
+
+    /**
+     * @var \Magento\Framework\Filesystem\Directory\ReadFactory
+     */
+    private $readFactory;
+
+    /**
+     * @var \Magento\Framework\Serialize\SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * ProcessorA constructor.
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
@@ -107,6 +124,9 @@ class ProcessorA
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param ProcessorR $processorR
+     * @param \Magento\Framework\Component\ComponentRegistrarInterface $componentRegistrar
+     * @param \Magento\Framework\Filesystem\Directory\ReadFactory $readFactory
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -117,7 +137,10 @@ class ProcessorA
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \GoMage\Core\Model\Processors\ProcessorR $processorR
+        \GoMage\Core\Model\Processors\ProcessorR $processorR,
+        \Magento\Framework\Component\ComponentRegistrarInterface $componentRegistrar,
+        \Magento\Framework\Filesystem\Directory\ReadFactory $readFactory,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
         $this->dateTime = $dateTime;
         $this->jsonHelper = $jsonHelper;
@@ -128,6 +151,9 @@ class ProcessorA
         $this->fullModuleList = $fullModuleList;
         $this->storeManager = $storeManager;
         $this->processorR = $processorR;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->readFactory = $readFactory;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -300,11 +326,25 @@ class ProcessorA
     }
 
     /**
-     * @return string
+     * @param $moduleName
+     * @return \Magento\Framework\Phrase|mixed
+     * @throws FileSystemException
      */
-    private function getVersion($name)
+    private function getVersion($moduleName)
     {
-        return $this->fullModuleList->getOne($name)['setup_version'];
+        $path = $this->componentRegistrar->getPath(
+            \Magento\Framework\Component\ComponentRegistrar::MODULE,
+            $moduleName
+        );
+        $directoryRead = $this->readFactory->create($path);
+        try {
+            $composerJsonData = $directoryRead->readFile('composer.json');
+        } catch (FileSystemException $e) {
+            throw $e;
+        }
+        $data = $this->serializer->unserialize($composerJsonData);
+
+        return !empty($data['version']) ? $data['version'] : __(' Module version is not specified in the composer.json file');
     }
 
     /**
