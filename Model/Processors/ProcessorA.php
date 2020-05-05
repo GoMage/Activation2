@@ -249,6 +249,7 @@ class ProcessorA
                     }
                 }
 
+           /*     Убрал удаление данных из БД при неудачной проверке на активацию, AS-131
                 if ($this->getNamesWithoutVersion()) {
                     if ($names) {
                         $resultN = array_diff($this->getNamesWithoutVersion(), $names);
@@ -264,7 +265,7 @@ class ProcessorA
                         $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
                         $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
                     }
-                }
+                } */
             } else {
                 $names = $this->getNamesWithoutVersion();
                 if ($names) {

@@ -170,84 +170,85 @@ class ProcessorAct
                             $result = $result->setData(['success' => 1]);
                         }
                     }
-                    if ($this->getNamesWithoutVersion()) {
-                        if ($names) {
-                            $resultN = array_diff($this->getNamesWithoutVersion(), $names);
-                        } else {
-                            $resultN = $this->getNamesWithoutVersion();
-                        }
+                    /*     Убрал удаление данных из БД при неудачной проверке на активацию, AS-131
+                if ($this->getNamesWithoutVersion()) {
+                 if ($names) {
+                     $resultN = array_diff($this->getNamesWithoutVersion(), $names);
+                 } else {
+                     $resultN = $this->getNamesWithoutVersion();
+                 }
 
-                        foreach ($resultN as $iconf) {
-                            if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
-                                $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
-                            }
-                            $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
-                            $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
-                            $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
-                        }
-                    }
-                } else {
-                    $this->config->deleteConfig('gomage_da/da/da', 'default', 0);
-                    $names = $this->getNamesWithoutVersion();
-                    if ($names) {
-                        foreach ($names as $iconf) {
-                            if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
-                                $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
-                            }
-                            $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
-                            $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
-                            $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
-                        }
-                    }
-                    $result = $result->setData(['error' => 1]);
-                }
-                $this
-                    ->config
-                    ->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
-                $this->reinitableConfig->reinit();
-                return $result;
-            }
-        } catch (\Exception $e) {
-            $result->setData(['error' => 1]);
-        }
-        return $result->setData(['error' => 1]);
-    }
+                 foreach ($resultN as $iconf) {
+                     if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
+                         $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
+                     }
+                     $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
+                     $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
+                     $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
+                 }
+             } */
+         } else {
+             $this->config->deleteConfig('gomage_da/da/da', 'default', 0);
+             $names = $this->getNamesWithoutVersion();
+             if ($names) {
+                 foreach ($names as $iconf) {
+                     if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
+                         $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
+                     }
+                     $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
+                     $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
+                     $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
+                 }
+             }
+             $result = $result->setData(['error' => 1]);
+         }
+         $this
+             ->config
+             ->saveConfig('gomage_da/da/da', $this->dateTime->gmtDate(), 'default', 0);
+         $this->reinitableConfig->reinit();
+         return $result;
+     }
+ } catch (\Exception $e) {
+     $result->setData(['error' => 1]);
+ }
+ return $result->setData(['error' => 1]);
+}
 
-    public function getNames()
-    {
-        $n = [];
-        $names = $this->fullModuleList->getNames();
-        foreach ($names as $name) {
-            $nn = strpos($name, 'GoMage');
-            if (0 === $nn) {
-                if ($this->processorR->isD($name)) {
-                    $n[$name] = $name . '_' . $this->getVersion($name);
-                }
-            }
-        }
-        return $n;
-    }
+public function getNames()
+{
+ $n = [];
+ $names = $this->fullModuleList->getNames();
+ foreach ($names as $name) {
+     $nn = strpos($name, 'GoMage');
+     if (0 === $nn) {
+         if ($this->processorR->isD($name)) {
+             $n[$name] = $name . '_' . $this->getVersion($name);
+         }
+     }
+ }
+ return $n;
+}
 
-    public function getNamesWithoutVersion()
-    {
-        $n = [];
-        $names = $this->fullModuleList->getNames();
-        foreach ($names as $name) {
-            $nn = strpos($name, 'GoMage');
-            if (0 === $nn) {
-                if ($this->processorR->isD($name)) {
-                    $n[$name] = $name;
-                }
-            }
-        }
-        return $n;
-    }
+public function getNamesWithoutVersion()
+{
+ $n = [];
+ $names = $this->fullModuleList->getNames();
+ foreach ($names as $name) {
+     $nn = strpos($name, 'GoMage');
+     if (0 === $nn) {
+         if ($this->processorR->isD($name)) {
+             $n[$name] = $name;
+         }
+     }
+ }
+ return $n;
+}
 
-    /**
-     * @param $moduleName
-     * @return \Magento\Framework\Phrase|mixed
-     * @throws FileSystemException
-     */
+/**
+* @param $moduleName
+* @return \Magento\Framework\Phrase|mixed
+* @throws FileSystemException
+*/
     private function getVersion($moduleName)
     {
         $path = $this->componentRegistrar->getPath(
