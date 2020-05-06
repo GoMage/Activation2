@@ -208,47 +208,47 @@ class ProcessorAct
          $this->reinitableConfig->reinit();
          return $result;
      }
- } catch (\Exception $e) {
-     $result->setData(['error' => 1]);
- }
- return $result->setData(['error' => 1]);
-}
+         } catch (\Exception $e) {
+             $result->setData(['error' => 1]);
+         }
+        return $result->setData(['error' => 1]);
+    }
 
-public function getNames()
-{
- $n = [];
- $names = $this->fullModuleList->getNames();
- foreach ($names as $name) {
-     $nn = strpos($name, 'GoMage');
-     if (0 === $nn) {
-         if ($this->processorR->isD($name)) {
-             $n[$name] = $name . '_' . $this->getVersion($name);
+    public function getNames()
+    {
+     $n = [];
+     $names = $this->fullModuleList->getNames();
+     foreach ($names as $name) {
+         $nn = strpos($name, 'GoMage');
+         if (0 === $nn) {
+             if ($this->processorR->isD($name)) {
+                 $n[$name] = $name . '_' . $this->getVersion($name);
+             }
          }
      }
- }
- return $n;
-}
+     return $n;
+    }
 
-public function getNamesWithoutVersion()
-{
- $n = [];
- $names = $this->fullModuleList->getNames();
- foreach ($names as $name) {
-     $nn = strpos($name, 'GoMage');
-     if (0 === $nn) {
-         if ($this->processorR->isD($name)) {
-             $n[$name] = $name;
+    public function getNamesWithoutVersion()
+    {
+     $n = [];
+     $names = $this->fullModuleList->getNames();
+     foreach ($names as $name) {
+         $nn = strpos($name, 'GoMage');
+         if (0 === $nn) {
+             if ($this->processorR->isD($name)) {
+                 $n[$name] = $name;
+             }
          }
      }
- }
- return $n;
-}
+     return $n;
+    }
 
-/**
-* @param $moduleName
-* @return \Magento\Framework\Phrase|mixed
-* @throws FileSystemException
-*/
+    /**
+    * @param $moduleName
+    * @return \Magento\Framework\Phrase|mixed
+    * @throws FileSystemException
+    */
     private function getVersion($moduleName)
     {
         $path = $this->componentRegistrar->getPath(
