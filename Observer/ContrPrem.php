@@ -10,7 +10,7 @@
  * @author    GoMage.com
  * @license   https://www.gomage.com/licensing  Single domain license
  * @terms     of use https://www.gomage.com/terms-of-use
- * @version   Release: 2.1.0
+ * @version   Release: 2.0.0
  * @since     Class available since Release 2.0.0
  */
 
@@ -138,8 +138,8 @@ class ContrPrem implements ObserverInterface
                         );
                 } else {
                     $errorMsg = __(
-                        'Please activate the extension in Stores -> Configuration -> GoMage menu' .
-                        ' <a href="%1">Back to activation</a>',
+                        'Please activate extension in stores -> config -> gomage -> activation' .
+                        ' <a href="%1">Back to activation</a> .',
                         $action->getUrl('adminhtml/system_config/edit/section/gomage_core')
                     );
                     $this->messageManager->addError($errorMsg);
@@ -147,7 +147,7 @@ class ContrPrem implements ObserverInterface
             }
             $action->getRequest()->initForward();
             $action->getRequest()->setActionName('noroute');
-            $action->getRequest()->setDispatched(true);
+            $action->getRequest()->setDispatched(false);
         }
     }
 
