@@ -170,23 +170,6 @@ class ProcessorAct
                             $result = $result->setData(['success' => 1]);
                         }
                     }
-                    /*     Убрал удаление данных из БД при неудачной проверке на активацию, AS-131
-                if ($this->getNamesWithoutVersion()) {
-                 if ($names) {
-                     $resultN = array_diff($this->getNamesWithoutVersion(), $names);
-                 } else {
-                     $resultN = $this->getNamesWithoutVersion();
-                 }
-
-                 foreach ($resultN as $iconf) {
-                     if (!$this->scopeConfig->getValue('section/'.$iconf.'/e')) {
-                         $this->config->deleteConfig('section/' . $iconf . '/e', 'default', 0);
-                     }
-                     $this->config->deleteConfig('section/' . $iconf . '/a', 'default', 0);
-                     $this->config->deleteConfig('section/' . $iconf . '/c', 'default', 0);
-                     $this->config->deleteConfig('section/' . $iconf . '/coll', 'default', 0);
-                 }
-             } */
          } else {
              $this->config->deleteConfig('gomage_da/da/da', 'default', 0);
              $names = $this->getNamesWithoutVersion();
