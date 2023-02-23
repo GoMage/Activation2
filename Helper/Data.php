@@ -794,25 +794,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isA($name)
     {
-        if (!isset($this->inf[$name])) {
-            if ($this->scopeConfig->getValue('section/' . $name . '/coll')) {
-                $this->inf[$name] = @unserialize(($this->scopeConfig->getValue('section/' . $name . '/coll')));
-            } else {
-                return false;
-            }
-        }
-
-        $act = (isset($this->inf[$name]['a'])) ? $this->inf[$name]['a'] : false;
-        if (!$act) {
-            return false;
-        }
-        $matches = false;
-        if ($act) {
-            preg_match('/^[0-9a-f]{32}$/', $this->inf[$name]['a'], $matches);
-        }
-        return ($this->iAadmCom($name, $matches)
-                && $this->isUseWS($this->inf[$name]['ds'])
-            ) || ($this->isFrComp($name, $matches) && $this->isD($this->inf[$name]['ds']));
+        return true;
     }
 
     public function isCo()
